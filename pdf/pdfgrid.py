@@ -132,7 +132,7 @@ def _mk_line(cs):
             'text': s, 'chars': cs, 'size': max(c['size'] for c in cs)}
 
 
-def grid(page, ruled_background=False, fill_boxes=False):
+def grid(page, ruled_background=False, fill_boxes=False, min_clock=4):
     H, V, D = segments(page)
     up = [c for c in page.chars if c.get('upright', True) and c['text'].strip()]
     lines = _lines_of(up)
@@ -158,13 +158,15 @@ def grid(page, ruled_background=False, fill_boxes=False):
             tl = cand
             break
         clock = [l for l in _lines_of([c for c in up if c['x1'] <= x + 0.8 and c['x0'] >= left]) if CLOCK_RE.match(l['text'].strip())]
-        if len(clock) >= 4:
+        if len(clock) >= min_clock:
             tl = clock
             mode = 'clock'
             break
     tl.sort(key=lambda l: l['top'])
     if not tl:
         raise ValueError('nu găsesc coloana cu orele')
+    if min_clock < 4 and mode == 'clock' and len(tl) < 2:
+        raise ValueError('rând rupt la marginea paginii')
     tx0 = min(l['x0'] for l in tl) - 1
     tx1 = max(l['x1'] for l in tl) + 1
     # row borders: horizontal strokes, weighted by how much of the page width they cover
@@ -181,6 +183,7 @@ def grid(page, ruled_background=False, fill_boxes=False):
     day = 0
     prev = None
     pars = []
+    lone_first = False
     if mode == 'clock':
         # "08:00" over "09:50": one slot, the upper half for odd weeks, the lower for even weeks
         # roles: the "1"/"2" marker when printed next to the time, else alternate start/end (":50" is always an end)
@@ -194,8 +197,10 @@ def grid(page, ruled_background=False, fill_boxes=False):
             else:
                 roles.append('e' if roles and roles[-1] == 's' else 's')
         i = 0
-        while i + 1 < len(tl):
-            if roles[i] != 's' or roles[i + 1] != 'e':
+        while i < len(tl):
+            if i + 1 >= len(tl) or roles[i] != 's' or roles[i + 1] != 'e':
+                if roles[i] == 'e' and not labels:
+                    lone_first = True   # the second half of a slot that began on the previous page: this page goes on from that day
                 i += 1
                 continue
             a_, b_ = CLOCK_RE.match(tl[i]['text'].strip()), CLOCK_RE.match(tl[i + 1]['text'].strip())
@@ -215,6 +220,8 @@ def grid(page, ruled_background=False, fill_boxes=False):
             day += 1
         prev = s_
         labels.append((day, s_, e_, (l['top'] + l['bottom']) / 2, l))
+    if not labels:
+        raise ValueError('pagină fără rânduri')
     rows = []
     for i, (d, s_, e_, cy, l) in enumerate(labels):
         yu = labels[i - 1][3] if i else None
@@ -239,6 +246,8 @@ def grid(page, ruled_background=False, fill_boxes=False):
         rows.append({'d': d, 's': s_, 'e': e_, 'y0': y0, 'y1': y1})
         if pars:
             rows[-1]['par'] = pars[i]
+        if i == 0 and lone_first:
+            rows[-1]['cont'] = True   # second half of a slot that began on the previous page
     for a_, b_ in zip(rows, rows[1:]):   # no gaps/overlaps between consecutive rows
         if mode == 'clock' and a_['d'] != b_['d'] and b_['y0'] >= a_['y1']:
             continue   # the band between two days (hour totals) belongs to neither
@@ -275,7 +284,7 @@ def grid(page, ruled_background=False, fill_boxes=False):
     bounds = []
     for cl in _cluster(cand, 3.2):
         tot = sum(xs_len[x] for x in cl)
-        if tot >= 2 * (rows[0]['y1'] - rows[0]['y0']):
+        if tot >= (0.3 if len(rows) == 1 else 2) * (rows[0]['y1'] - rows[0]['y0']):
             bounds.append(sum(x * xs_len[x] for x in cl) / tot)
     cols = [(a, b) for a, b in zip(bounds, bounds[1:]) if b - a > 6]
     # a "Săpt. impară / Săpt. pară" column after the hours: every slot is two sub-rows (odd weeks above, even below)

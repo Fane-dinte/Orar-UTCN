@@ -49,9 +49,13 @@ def build_pages(dept, pages, meta, place, norm_room=lambda r: r, default_room=No
                 pg = pdf.pages[pidx]
                 if (extra or {}).get('crop'):
                     pg = pg.crop((0, extra['crop'][0], pg.width, extra['crop'][1] or pg.height))
-                g = grid(pg, ruled_background=bool((extra or {}).get('ruled')), fill_boxes=bool((extra or {}).get('fill')))
+                g = grid(pg, ruled_background=bool((extra or {}).get('ruled')), fill_boxes=bool((extra or {}).get('fill')), min_clock=(extra or {}).get('min_clock', 4))
         except Exception as e:  # noqa: BLE001
-            warnings.append(f'{sheet}: {e}')
+            if (extra or {}).get('tail') and carry.get(path):
+                carry[path]['last_day'] += 1   # a table cut by the page edge: its first slot is the start of the next day, the rest is on the next page
+                continue
+            if not (extra or {}).get('min_clock'):
+                warnings.append(f'{sheet}: {e}')
             continue
         gcols = group_columns(g)
         ex = extra or {}
@@ -61,7 +65,7 @@ def build_pages(dept, pages, meta, place, norm_room=lambda r: r, default_room=No
             blocks = []
             for r in g['rows']:
                 if not blocks or blocks[-1][0] != r.get('blk', r['d']):
-                    blocks.append((r.get('blk', r['d']), r.get('named'), r['s']))
+                    blocks.append((r.get('blk', r['d']), r.get('named'), r['s'] + (100 if r.get('cont') else 0)))
             day_of = {}
             last = prev['last_day'] if prev else -1
             for bi, (blk, named, s0) in enumerate(blocks):

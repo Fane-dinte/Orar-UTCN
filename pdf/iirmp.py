@@ -63,6 +63,9 @@ def build(src_dir):
             edges = [0] + [t - 8 for t in tops] + [foot]
             for k in range(len(edges) - 1):
                 ex = {'page': i, 'fill': True}
+                if k > 0 or i > 0:
+                    ex['min_clock'] = 1   # a tail of a table that goes on the next page has few time labels
+                    ex['tail'] = True if k > 0 else False
                 if len(edges) > 2 or foot:
                     ex['crop'] = (edges[k], edges[k + 1])
                 pages.append((path, re.sub(r'\.pdf$', '', name)[:40], year, 'lic', ex))

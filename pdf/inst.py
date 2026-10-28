@@ -134,7 +134,7 @@ def fetch(dest):
     links = sorted(set(re.findall(r'href="([^"]*/Orar/S1_[^"]*\.pdf)"', html, re.I)))
     os.makedirs(dest, exist_ok=True)
     for href in links:
-        url = urljoin(PAGE, href).replace(' ', '%20')
+        url = urljoin('https://instalatii.utcluj.ro/', href).replace(' ', '%20')   # the page's links are relative to the site root, not to /studenti/
         name = unquote(url.split('/')[-1])
         if re.search(r'psihopedagog|exemplu', name, re.I):
             continue
