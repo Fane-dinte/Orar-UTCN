@@ -113,6 +113,7 @@ for (const dept of DEPTS) {
     else { src = await getBuf(dept); next = await buildDept(src.buf, dept); }
   } catch (e) { console.error(`! ${dept}: ${e.message.split('\n')[0]} — păstrez datele vechi`); continue; }
   const prev = readJson(path.join(OUT, `${dept}.json`));
+  if (!next.groups.length && prev?.groups?.length) { console.error(`! ${dept}: 0 grupe în sursă — păstrez datele vechi`); continue; }
   const diff = diffDept(prev, next);
   const same = prev && JSON.stringify(prev.entries) === JSON.stringify(next.entries) && JSON.stringify(prev.groups) === JSON.stringify(next.groups) && JSON.stringify(prev.langs) === JSON.stringify(next.langs);
   const data = { dept, stamp: next.stamp, builtAt: same && prev.builtAt ? prev.builtAt : now, sourceModified: src.lastModified, groups: next.groups, entries: next.entries, langs: next.langs, notes: next.notes };

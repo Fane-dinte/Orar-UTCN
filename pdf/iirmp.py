@@ -74,9 +74,16 @@ def fetch(dest):
     from urllib.parse import urljoin, unquote
     ua = {'User-Agent': 'orar-utcn (+https://utcna.pages.dev)'}
     html = urllib.request.urlopen(urllib.request.Request(PAGE, headers=ua), timeout=60).read().decode('utf-8', 'replace')
-    # the four "Cluj-Napoca" licență lines come first in the page
-    block = html.split('Alba')[0]
-    links = re.findall(r'href="([^"]*/Sem1/[^"]*\.pdf)"', block, re.I)
+    # the "Cluj-Napoca" licență lines come first in the page, before the extensions (Alba…)
+    def pdf_links(text):
+        found = re.findall(r'href\s*=\s*["\']([^"\']*\.pdf)["\']', text, re.I)
+        sem1 = [h for h in found if re.search(r'sem\s*1|[_ ]s1[_ ]', h, re.I)]
+        return sem1 or found
+    links = pdf_links(html.split('Alba')[0]) or pdf_links(html)
+    links = list(dict.fromkeys(links))
+    print(f'iirmp: {len(links)} PDF-uri găsite pe {PAGE} ({len(html)} caractere)', file=sys.stderr)
+    if not links:
+        raise SystemExit('iirmp: niciun PDF găsit pe pagina de orar')
     os.makedirs(dest, exist_ok=True)
     for href in links:
         url = urljoin(PAGE, href).replace(' ', '%20')
