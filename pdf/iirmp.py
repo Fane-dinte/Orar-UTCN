@@ -79,7 +79,11 @@ def fetch(dest):
         found = re.findall(r'href\s*=\s*["\']([^"\']*\.pdf)["\']', text, re.I)
         sem1 = [h for h in found if re.search(r'sem\s*1|[_ ]s1[_ ]', h, re.I)]
         return sem1 or found
-    links = pdf_links(html.split('Alba')[0]) or pdf_links(html)
+    # "Alba" also occurs earlier in the page (menu), so cut at the first one after the first Sem1 link
+    first = re.search(r'href\s*=\s*["\'][^"\']*/Sem\s*1/', html, re.I)
+    start = first.start() if first else 0
+    end = html.find('Alba', start)
+    links = pdf_links(html[start:end if end > 0 else len(html)]) or pdf_links(html)
     links = list(dict.fromkeys(links))
     print(f'iirmp: {len(links)} PDF-uri găsite pe {PAGE} ({len(html)} caractere)', file=sys.stderr)
     if not links:
