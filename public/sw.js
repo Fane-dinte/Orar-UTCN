@@ -1,7 +1,7 @@
 // Orar UTCN — merge și fără internet.
 // Pagina: întâi de pe internet (ca să vezi imediat versiunea nouă), din cache doar fără semnal.
 // Datele: din cache imediat, actualizate în fundal. Fonturile: din cache.
-const V = "orar-v2-4";
+const V = "orar-v2-5";
 const CORE = ["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/favicon.svg", "data/index.json"];
 
 self.addEventListener("install", (e) => {

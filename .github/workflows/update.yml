@@ -1,8 +1,9 @@
-name: Actualizează orarul
+name: Update timetables
 
 # Rebuilds utcna.pages.dev from every faculty's official timetable and publishes it when something changed.
 # Uses the repo's existing settings: secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID,
-# variables CF_PROJECT (the Pages project, utcna) and ORAR_URL (the Automatică share link).
+# variables CF_PROJECT (the Pages project, utcna), ORAR_URL (the Automatică share link) and, optionally,
+# EDUPAGE_RELAY (a Cloudflare Worker that relays the Construcții EduPage calls when GitHub's runners are refused).
 
 on:
   schedule:
@@ -40,29 +41,30 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Instalează dependențele
+      - name: Install dependencies
         run: |
           npm ci
           pip install -r pdf/requirements.txt
 
-      - name: Descarcă orarele oficiale și reconstruiește site-ul
+      - name: Download the official timetables and rebuild the site
         env:
           ORAR_URL: ${{ vars.ORAR_URL }}
+          EDUPAGE_RELAY: ${{ vars.EDUPAGE_RELAY }}
         # a faculty whose site fails today keeps its last good timetable
         run: node scripts/build.mjs --fetch
 
-      - name: S-a schimbat ceva?
+      - name: Did anything change?
         id: changed
         run: |
           git add public/data
           if git diff --cached --quiet && [ "${{ github.event_name }}" = "schedule" ]; then
             echo "yes=false" >> "$GITHUB_OUTPUT"
-            echo "Niciun orar nu s-a schimbat. Nu public nimic."
+            echo "No timetable changed. Nothing to publish."
           else
             echo "yes=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publică pe Cloudflare Pages
+      - name: Publish to Cloudflare Pages
         if: steps.changed.outputs.yes == 'true'
         run: npx --yes wrangler@3.114.0 pages deploy public --project-name "${CF_PROJECT:-utcna}" --branch main --commit-dirty=true
         env:
@@ -70,10 +72,10 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CF_PROJECT: ${{ vars.CF_PROJECT }}
 
-      - name: Salvează datele publicate
+      - name: Save the published data
         if: steps.changed.outputs.yes == 'true'
         run: |
           git config user.name "orar-bot"
           git config user.email "orar-bot@users.noreply.github.com"
-          git diff --cached --quiet || git commit -m "Orar actualizat $(date -u +%Y-%m-%dT%H:%MZ)"
+          git diff --cached --quiet || git commit -m "Timetable updated $(date -u +%Y-%m-%dT%H:%MZ)"
           git push
