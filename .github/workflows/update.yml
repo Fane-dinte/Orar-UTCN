@@ -1,17 +1,21 @@
 name: Actualizează orarul
 
+# Rebuilds utcna.pages.dev from every faculty's official timetable and publishes it when something changed.
+# Uses the repo's existing settings: secrets CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID,
+# variables CF_PROJECT (the Pages project, utcna) and ORAR_URL (the Automatică share link).
+
 on:
   schedule:
-    # la fiecare oră între ~7 și ~22 (ora României), luni-vineri; de două ori pe zi în weekend
-    - cron: "23 4-19 * * 1-5"
-    - cron: "23 6,16 * * 0,6"
+    # every hour between ~7 and ~22 Romanian time on weekdays, twice a day at weekends
+    - cron: "17 4-19 * * 1-5"
+    - cron: "17 6,16 * * 0,6"
   push:
     paths:
-      - "input/orar.xlsx"
-      - "site/**"
+      - "public/**"
+      - "lib/**"
       - "scripts/**"
-      - "config.json"
-  workflow_dispatch:
+      - "pdf/**"
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -23,56 +27,53 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
       - name: Instalează dependențele
-        run: pip install openpyxl==3.1.5
+        run: |
+          npm ci
+          pip install -r pdf/requirements.txt
 
-      - name: Ia orarul oficial
+      - name: Descarcă orarele oficiale și reconstruiește site-ul
         env:
           ORAR_URL: ${{ vars.ORAR_URL }}
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            if [ -z "$ORAR_URL" ]; then echo "::error::Lipsește variabila ORAR_URL"; exit 1; fi
-            python scripts/fetch_xlsx.py "$ORAR_URL" orar.xlsx
-          else
-            cp input/orar.xlsx orar.xlsx
-          fi
-
-      - name: Construiește site-ul
-        run: python scripts/build_site.py orar.xlsx dist --previous data/last.json
+        # a faculty whose site fails today keeps its last good timetable
+        run: node scripts/build.mjs --fetch
 
       - name: S-a schimbat ceva?
         id: changed
         run: |
-          if [ "${{ github.event_name }}" != "schedule" ] || ! cmp -s dist/data.json data/last.json; then
-            echo "yes=true" >> "$GITHUB_OUTPUT"
-          else
+          git add public/data
+          if git diff --cached --quiet && [ "${{ github.event_name }}" = "schedule" ]; then
             echo "yes=false" >> "$GITHUB_OUTPUT"
-            echo "Orarul oficial nu s-a schimbat. Nu public nimic."
+            echo "Niciun orar nu s-a schimbat. Nu public nimic."
+          else
+            echo "yes=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Publică pe Cloudflare Pages
         if: steps.changed.outputs.yes == 'true'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=${{ vars.CF_PROJECT }} --branch=main --commit-dirty=true
+        run: npx --yes wrangler@3.114.0 pages deploy public --project-name "${CF_PROJECT:-utcna}" --branch main --commit-dirty=true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CF_PROJECT: ${{ vars.CF_PROJECT }}
 
-      - name: Salvează versiunea publicată
+      - name: Salvează datele publicate
         if: steps.changed.outputs.yes == 'true'
         run: |
-          cp dist/data.json data/last.json
-          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then cp orar.xlsx input/orar.xlsx; fi
           git config user.name "orar-bot"
           git config user.email "orar-bot@users.noreply.github.com"
-          git add data/last.json input/orar.xlsx
-          git diff --cached --quiet || git commit -m "Orar actualizat: $(python -c "import json;print(json.load(open('data/last.json'))['meta']['updated'])")"
+          git diff --cached --quiet || git commit -m "Orar actualizat $(date -u +%Y-%m-%dT%H:%MZ)"
           git push
