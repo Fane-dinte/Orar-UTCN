@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="Orar UTCN">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b2f66"/><stop offset="1" stop-color="#4b2fb0"/></linearGradient>
+    <radialGradient id="glow" cx="0.85" cy="0.1" r="0.7"><stop offset="0" stop-color="#8f7bff" stop-opacity=".55"/><stop offset="1" stop-color="#8f7bff" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="1280" height="320" rx="28" fill="url(#g)"/>
+  <rect width="1280" height="320" rx="28" fill="url(#glow)"/>
+  <g opacity=".08" fill="none" stroke="#fff" stroke-width="2">
+    <circle cx="1120" cy="60" r="150"/><circle cx="1120" cy="60" r="220"/><circle cx="1120" cy="60" r="290"/>
+  </g>
+  <g transform="translate(88 93) scale(5.6)" fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="3.5"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/><path d="M7.5 14h3M13.5 14h3M7.5 17.5h3"/></g>
+  <text x="270" y="170" font-family="Inter,'Segoe UI',Helvetica,Arial,sans-serif" font-size="84" font-weight="800" letter-spacing="-2" fill="#ffffff">Orar UTCN</text>
+  <text x="272" y="226" font-family="Inter,'Segoe UI',Helvetica,Arial,sans-serif" font-size="30" font-weight="500" fill="#ffffffcc">Orarul UTCN Cluj, pe telefon. Actualizat automat.</text>
+</svg>

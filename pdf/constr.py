@@ -20,10 +20,22 @@ KIND = {'C': 'C', 'S': 'S', 'L': 'L', 'P': 'P', 'SP': 'SP'}
 DAYMAP = {'10000': 0, '01000': 1, '00100': 2, '00010': 3, '00001': 4}
 
 
+# Edupage drops connections from some GitHub runner IPs: then the same two calls go through an allow-listed Cloudflare relay
+RELAY = 'https://edupage-relay.example.workers.dev'
+
+
 def _post(func, args):
     body = json.dumps({'__args': args, '__gsh': '00000000'}).encode()
-    req = urllib.request.Request(f'{BASE}/timetable/server/{func}', data=body, headers={'content-type': 'application/json; charset=UTF-8', 'User-Agent': 'orar-utcn (+https://utcna.pages.dev)'})
-    return json.loads(urllib.request.urlopen(req, timeout=60).read().decode('utf-8'))
+    hdr = {'content-type': 'application/json; charset=UTF-8', 'User-Agent': 'orar-utcn (+https://utcna.pages.dev)'}
+    last = None
+    for base, wait in ((BASE, 25), (RELAY, 60)):
+        try:
+            req = urllib.request.Request(f'{base}/timetable/server/{func}', data=body, headers=hdr)
+            return json.loads(urllib.request.urlopen(req, timeout=wait).read().decode('utf-8'))
+        except Exception as e:  # noqa: BLE001
+            last = e
+            print(f'constr: {base} nu răspunde ({e}), încerc releul', file=sys.stderr)
+    raise last
 
 
 def fetch():
