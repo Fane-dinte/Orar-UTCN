@@ -23,6 +23,7 @@ export const SOURCES = {
   constr: { name: 'Facultatea de Construcții', page: 'https://constructiicluj.edupage.org/timetable/', url: 'https://constructiicluj.edupage.org/timetable/', py: 'constr.py' },
   inst: { name: 'Facultatea de Inginerie a Instalațiilor', page: 'https://instalatii.utcluj.ro/studenti/orar.html', url: 'https://instalatii.utcluj.ro/studenti/orar.html', py: 'inst.py' },
   armm: { name: 'Facultatea de Autovehicule Rutiere, Mecatronică și Mecanică', page: 'https://armm.utcluj.ro/orar.html', url: 'https://armm.utcluj.ro/orar.html', py: 'armm.py' },
+  imm: { name: 'Facultatea de Ingineria Materialelor și a Mediului', page: 'https://imm.utcluj.ro/orar.html', url: 'https://imm.utcluj.ro/orar.html', py: 'imm.py' },
   iirmp: { name: 'Facultatea de Inginerie Industrială, Robotică și Managementul Producției', page: 'https://iirmp.utcluj.ro/orar.html', url: 'https://iirmp.utcluj.ro/orar.html', py: 'iirmp.py' },
   etti: { name: 'Facultatea de Electronică, Telecomunicații și Tehnologia Informației', page: 'https://etti.utcluj.ro/orar.html', url: 'https://etti.utcluj.ro/orar.html', py: 'etti.py' },
 };

@@ -108,7 +108,7 @@ def build_pages(dept, pages, meta, place, norm_room=lambda r: r, default_room=No
                 continue
             if gc['id'] in entries:
                 gc['id'] += f'-{len(entries)}'
-            groups.append({'id': gc['id'], 'label': gc['label'], 'prog': gc['prog'], 'year': year, 'sgs': gc['sgs'], 'sub': gc.get('sub', ''), 'sheet': sheet, 'dept': dept, 'fac': gc.get('fac', dept)})
+            groups.append({'id': gc['id'], 'label': gc['label'], 'prog': gc['prog'], 'year': gc.get('year', year), 'sgs': gc['sgs'], 'sub': gc.get('sub', ''), 'sheet': sheet, 'dept': dept, 'fac': gc.get('fac', dept)})
             entries[gc['id']] = []
             page_groups.append(gc)
         notes.setdefault(sheet, [])

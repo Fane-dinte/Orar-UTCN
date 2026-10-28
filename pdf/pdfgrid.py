@@ -14,6 +14,7 @@ import re
 from collections import defaultdict
 
 CLOCK_RE = re.compile(r'^(?:[A-ZĂÂÎȘȚŞŢ]\s*)?(\d{1,2})\s*:\s*(\d{2})(?:\s*([12]))?$')
+HHMM_RE = re.compile(r'^(\d{2})(\d{2})[-–](\d{2})(\d{2})$')
 TIME_RE = re.compile(r'^(\d{1,2})\s*[-–]\s*(\d{1,2})(?!\d)(?:\D{0,2})$')
 DAYS = ['LUNI', 'MARTI', 'MIERCURI', 'JOI', 'VINERI', 'SAMBATA']
 
@@ -162,6 +163,27 @@ def grid(page, ruled_background=False, fill_boxes=False, min_clock=4):
             tl = clock
             mode = 'clock'
             break
+    if not tl:
+        # "08:00-09:50" with the minutes printed as superscripts: the pieces sit on slightly different baselines
+        for i, x in enumerate(longs):
+            left = longs[i - 1] - 0.8 if i else -1
+            cs = sorted((c for c in up if left <= c['x0'] and c['x1'] <= x + 0.8 and (c['text'].isdigit() or c['text'] in '-–')), key=lambda c: (c['top'] + c['bottom']) / 2)
+            bands = []
+            for c in cs:
+                cy = (c['top'] + c['bottom']) / 2
+                if bands and cy - bands[-1][0] <= 6:
+                    bands[-1][1].append(c)
+                else:
+                    bands.append((cy, [c]))
+            found = []
+            for _, b in bands:
+                m_ = HHMM_RE.match(''.join(c['text'] for c in sorted(b, key=lambda c: c['x0'])))
+                if m_:
+                    s_, e_ = int(m_.group(1)), int(m_.group(3)) + (1 if int(m_.group(4)) >= 30 else 0)
+                    found.append({'top': min(c['top'] for c in b), 'bottom': max(c['bottom'] for c in b), 'x0': min(c['x0'] for c in b), 'x1': max(c['x1'] for c in b), 'text': f'{s_}-{e_}', 'size': max(c['size'] for c in b)})
+            if len(found) >= 4:
+                tl = found
+                break
     tl.sort(key=lambda l: l['top'])
     if not tl:
         raise ValueError('nu găsesc coloana cu orele')
