@@ -1,0 +1,16 @@
+{
+  "name": "orar-utcn",
+  "version": "1.0.0",
+  "description": "Orarul UTCN Cluj, rescris: utcna.pages.dev",
+  "scripts": {
+    "build": "node scripts/build.mjs --fetch",
+    "serve": "python3 -m http.server 8765 -d public"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "private": true,
+  "type": "module"
+}

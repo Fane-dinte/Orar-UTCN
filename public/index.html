@@ -1,0 +1,1264 @@
+<!doctype html>
+<html lang="ro" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Orar UTCN</title>
+<meta name="description" content="Orarul tău de la UTCN Cluj: pe zi pe telefon, pe săptămână pe calculator. Se actualizează singur din orarul oficial.">
+<meta name="theme-color" content="#fbfbfd">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Orar UTCN">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="preload" href="data/index.json" as="fetch" crossorigin>
+<style>
+:root{
+  --font:"Space Grotesk",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --bg:#fbfbfd; --surface:#ffffff; --surface-2:#f2f3f7; --line:#e6e7ee; --line-2:#d9dbe4;
+  --text:#14151a; --muted:#555a66; --faint:#767b88;
+  --accent:#3a2fb0; --accent-ink:#ffffff; --accent-soft:#ece9ff; --accent-text:#3a2fb0;
+  --hero-a:#1d2a78; --hero-b:#4b2aa8; --hero-ink:#ffffff; --hero-sub:#d9dcff;
+  --c-bg:#e3e8ff; --c-fg:#1f2f86; --s-bg:#fff1d6; --s-fg:#6b4500; --l-bg:#dcf3e6; --l-fg:#0f5130;
+  --p-bg:#fde4ef; --p-fg:#7a1f4b; --x-bg:#f0f1f5; --x-fg:#3d414b;
+  --today-col:#f5f3ff; --shadow:0 8px 28px rgba(20,21,26,.12); --scrim:rgba(20,21,26,.42);
+  --fs:1; --r:18px; --hour:52px;
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  --bg:#111216; --surface:#1a1c22; --surface-2:#22252c; --line:#2b2e36; --line-2:#383c46;
+  --text:#eceef2; --muted:#a6abb7; --faint:#8a8f9b;
+  --accent:#8f86ff; --accent-ink:#11121a; --accent-soft:#2a2750; --accent-text:#b3acff;
+  --hero-a:#262c74; --hero-b:#5a36b8; --hero-sub:#cfd2ff;
+  --c-bg:#222d55; --c-fg:#d9e2ff; --s-bg:#3a2f14; --s-fg:#ffe2a6; --l-bg:#163728; --l-fg:#c9f0da;
+  --p-bg:#3d1f30; --p-fg:#ffd3e6; --x-bg:#262931; --x-fg:#cfd3dc;
+  --today-col:#1d1b33; --shadow:0 10px 30px rgba(0,0,0,.45); --scrim:rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+[data-theme="amoled"]{
+  --bg:#000000; --surface:#0b0b0d; --surface-2:#141418; --line:#1f2026; --line-2:#2c2e36;
+  --text:#f3f3f6; --muted:#a3a7b2; --faint:#868a95;
+  --accent:#9b93ff; --accent-ink:#000000; --accent-soft:#1d1a3c; --accent-text:#b9b3ff;
+  --hero-a:#16194a; --hero-b:#3b2480; --hero-sub:#c9cbff;
+  --c-bg:#141c38; --c-fg:#d6dfff; --s-bg:#2a210c; --s-fg:#ffe0a0; --l-bg:#0e2619; --l-fg:#c2ecd4;
+  --p-bg:#2a1220; --p-fg:#ffd0e4; --x-bg:#15161a; --x-fg:#cdd0d8;
+  --today-col:#0d0b1f; --shadow:0 10px 30px rgba(0,0,0,.7); --scrim:rgba(0,0,0,.7);
+  color-scheme:dark;
+}
+[data-theme="utcn"]{
+  --bg:#f6f8fb; --surface:#ffffff; --surface-2:#edf1f7; --line:#dfe5ee; --line-2:#cdd6e3;
+  --text:#0d1b2e; --muted:#4b5a70; --faint:#6a788c;
+  --accent:#0b3a6f; --accent-ink:#ffffff; --accent-soft:#dbe6f3; --accent-text:#0b3a6f;
+  --hero-a:#0b3a6f; --hero-b:#16508f; --hero-sub:#d6e3f3;
+  --c-bg:#dbe6f3; --c-fg:#0b3a6f; --s-bg:#fbe3e6; --s-fg:#8e0c22; --l-bg:#e1f1e6; --l-fg:#14532d;
+  --p-bg:#f1e8d6; --p-fg:#6b4a0c; --x-bg:#eef0f3; --x-fg:#3b4555;
+  --today-col:#fdf1f3; --shadow:0 8px 28px rgba(13,27,46,.12);
+  --utcn-red:#c8102e;
+}
+[data-theme="classic"]{
+  --bg:#0f1011; --surface:#17181a; --surface-2:#1f2023; --line:#2a2c30; --line-2:#3b3e43;
+  --text:#edeef0; --muted:#b6bac1; --faint:#8d929a;
+  --accent:#6e5bd6; --accent-ink:#ffffff; --accent-soft:#25213f; --accent-text:#a99dff;
+  --hero-a:#2a2350; --hero-b:#4c3aa6; --hero-sub:#d4cfff;
+  --c-bg:#15263d; --c-fg:#ddebff; --s-bg:#33280f; --s-fg:#ffefc9; --l-bg:#123020; --l-fg:#d5f5e3;
+  --p-bg:#2c2032; --p-fg:#f1d6ff; --x-bg:#1f2023; --x-fg:#d3d6db;
+  --c-bar:#4c9aff; --s-bar:#f2b33d; --l-bar:#3dbe7a; --p-bar:#c98be8;
+  --today-col:#17191c; --shadow:0 10px 30px rgba(0,0,0,.5); --scrim:rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:calc(16px * var(--fs));line-height:1.35;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent-text)}
+svg.i{width:20px;height:20px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.app{max-width:1240px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+.iconbtn{width:44px;height:44px;border-radius:22px;border:1px solid var(--line);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;padding:0;color:var(--text);transition:background .15s}
+.iconbtn:hover{background:var(--surface-2)}
+.iconbtn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn{height:48px;border-radius:16px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;padding:0 18px;font-size:1rem}
+.btn.sec{background:var(--surface);color:var(--text);border:1px solid var(--line-2)}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:default}
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;font-size:.78rem;font-weight:700;letter-spacing:.04em}
+.k-C{--k-bg:var(--c-bg);--k-fg:var(--c-fg);--k-bar:var(--c-bar,var(--c-fg))}
+.k-S{--k-bg:var(--s-bg);--k-fg:var(--s-fg);--k-bar:var(--s-bar,var(--s-fg))}
+.k-L{--k-bg:var(--l-bg);--k-fg:var(--l-fg);--k-bar:var(--l-bar,var(--l-fg))}
+.k-P{--k-bg:var(--p-bg);--k-fg:var(--p-fg);--k-bar:var(--p-bar,var(--p-fg))}
+.k-X,.k-SP{--k-bg:var(--x-bg);--k-fg:var(--x-fg);--k-bar:var(--faint)}
+/* ---------- header ---------- */
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.kicker{font-size:.8rem;font-weight:600;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.kicker .ext{color:var(--accent-text)}
+h1.date{margin:2px 0 0;font-size:2.3rem;line-height:1.05;font-weight:700;letter-spacing:-.02em}
+.top-actions{display:flex;gap:6px;flex:none}
+.clover{display:inline-flex;width:18px;height:18px;border:0;background:none;padding:0;color:#2e9e5b;vertical-align:-3px}
+.clover svg{width:18px;height:18px}
+/* ---------- banner ---------- */
+.banner{margin-top:14px;border-radius:14px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);display:flex;gap:10px;align-items:center;font-size:.92rem;color:var(--muted)}
+.banner b{color:var(--text)}
+.banner .grow{flex:1}
+.banner button.link{border:0;background:none;color:var(--accent-text);font-weight:700;padding:6px 4px}
+/* ---------- hero ---------- */
+.hero{margin-top:16px;border-radius:20px;padding:16px 18px;background:linear-gradient(140deg,var(--hero-a) 0%,var(--hero-b) 100%);color:var(--hero-ink,#fff);display:flex;justify-content:space-between;align-items:center;gap:12px;border:0;width:100%;text-align:left}
+.hero .lab{font-size:.75rem;font-weight:600;letter-spacing:.1em;color:var(--hero-sub);text-transform:uppercase}
+.hero .ttl{font-size:1.2rem;font-weight:700;margin-top:2px}
+.hero .sub{font-size:.88rem;color:var(--hero-sub)}
+.hero .cd{font-size:1.5rem;font-weight:700;white-space:nowrap;text-align:right}
+.hero .cd small{display:block;font-size:.72rem;font-weight:600;color:var(--hero-sub);letter-spacing:.06em;text-transform:uppercase}
+/* ---------- day strip ---------- */
+.days{margin-top:16px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.days button{height:62px;border:0;border-radius:16px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--muted);position:relative}
+.days button .n{font-size:.75rem;font-weight:600}
+.days button .d{font-size:1.1rem;font-weight:600;color:var(--text)}
+.days button .dots{display:flex;gap:3px;height:5px;margin-top:2px}
+.days button .dots i{width:4px;height:4px;border-radius:2px;background:var(--line-2)}
+.days button.today .d{color:var(--accent-text)}
+.days button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.days button[aria-selected="true"] .d{color:var(--accent-ink)}
+.days button[aria-selected="true"] .dots i{background:currentColor;opacity:.6}
+.days button.off .d{text-decoration:line-through;opacity:.6}
+.wknav{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:.85rem;color:var(--muted)}
+.wknav button{border:0;background:none;color:var(--accent-text);font-weight:700;padding:8px 6px;min-height:40px}
+.wknav .wkl,.wknav .wkr{display:flex;align-items:center;gap:4px}
+.wknav .wkr{gap:8px}
+.wknav .wkl button{width:40px;padding:0;display:inline-flex;align-items:center;justify-content:center}
+.wknav button.azi{background:var(--accent);color:var(--accent-ink);border-radius:999px;padding:0 16px;min-height:36px;font-size:.88rem}
+.seg.sm button{height:36px;padding:0 11px;font-size:.88rem}
+.iconbtn.has-dot{position:relative}
+.iconbtn.has-dot:after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:5px;background:var(--utcn-red,#e5484d);box-shadow:0 0 0 2px var(--surface)}
+.endl{margin:6px 0 0 74px;font-size:.8rem;color:var(--faint)}
+.endl button{border:0;background:none;padding:0;color:var(--faint);font:inherit;text-decoration:underline;text-decoration-color:var(--line-2);text-underline-offset:3px}
+.endc{margin-top:10px;border-radius:22px;padding:18px 18px 16px;background:var(--accent-soft);color:var(--text);display:flex;flex-direction:column;gap:4px;position:relative;overflow:hidden}
+.endc .big{font-size:1.45rem;font-weight:700;letter-spacing:-.01em}
+.endc .sub{color:var(--muted);font-size:.95rem}
+.endc .nx{margin-top:10px;border:0;background:var(--surface);border-radius:14px;padding:10px 12px;text-align:left;display:flex;gap:10px;align-items:center;width:100%;color:var(--text)}
+.endc .nx small{display:block;color:var(--muted);font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.endc .nx b{font-weight:700}
+.endc svg.sun{position:absolute;right:-18px;top:-18px;width:120px;height:120px;color:var(--accent-text);opacity:.14;stroke-width:1.6}
+.endc.wk{background:linear-gradient(140deg,var(--hero-a),var(--hero-b));color:var(--hero-ink,#fff)}
+.endc.wk .sub{color:var(--hero-sub)}
+.endc.wk svg.sun{color:#fff;opacity:.18}
+/* ---------- day list ---------- */
+.list{margin-top:8px;display:flex;flex-direction:column;gap:2px;touch-action:pan-y}
+.ev{display:flex;gap:14px;align-items:center;padding:10px 6px;border:0;background:none;width:100%;text-align:left;border-radius:16px;transition:background .15s}
+.ev:hover{background:var(--surface-2)}
+.tsq{width:54px;height:54px;flex:none;border-radius:15px;background:var(--k-bg);color:var(--k-fg);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;line-height:1.05}
+.tsq b{font-size:1.05rem}
+.tsq small{font-size:.72rem;font-weight:700}
+.ev-b{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ev-t{font-size:1.07rem;font-weight:700}
+.ev-m{font-size:.9rem;color:var(--muted)}
+.ev-x{font-size:.78rem;color:var(--faint);font-weight:600}
+.ev.now .tsq{box-shadow:0 0 0 2px var(--accent)}
+.ev.past{opacity:.55}
+.ev.opt .tsq{background:var(--x-bg);color:var(--x-fg)}
+[data-theme="classic"] .tsq{background:var(--surface-2);color:var(--text);box-shadow:inset 3px 0 0 var(--k-bar)}
+.gap{margin:2px 0 2px 74px;padding:5px 0;font-size:.8rem;color:var(--faint);border-top:1px dashed var(--line-2);border-bottom:1px dashed var(--line-2)}
+.empty{padding:34px 10px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--text);font-size:1.1rem;margin-bottom:4px}
+.ask{margin:6px 0;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.ask .q{font-size:.92rem;font-weight:600}
+.ask .row{display:flex;gap:8px;flex-wrap:wrap}
+.ask .row button{flex:1;min-width:84px;min-height:42px;padding:6px 8px;line-height:1.2;border-radius:13px;border:1px solid var(--line-2);background:var(--surface);font-weight:600}
+.ask .row button.pri{background:var(--text);color:var(--bg);border-color:var(--text)}
+.ask .hint{font-size:.76rem;color:var(--faint)}
+/* ---------- footer ---------- */
+.foot{margin-top:22px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.84rem;color:var(--muted);flex-wrap:wrap}
+.foot a,.foot button.link{color:var(--accent-text);font-weight:600;text-decoration:none;border:0;background:none;padding:6px 0}
+.foot .dot{display:inline-block;width:7px;height:7px;border-radius:4px;background:var(--utcn-red,var(--accent));margin-right:5px;vertical-align:1px}
+.foot .acts{display:flex;align-items:center;gap:2px}
+.install{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);font-size:.86rem;color:var(--muted)}
+.install .grow{flex:1}
+.install button.go{border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:10px;height:36px;padding:0 12px}
+.install button.x{border:0;background:none;color:var(--faint);width:36px;height:36px}
+.legal{margin-top:14px;font-size:.74rem;color:var(--faint);text-align:center}
+/* ---------- desktop week ---------- */
+.dhead{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+.dhead h1{margin:0;font-size:1.9rem;font-weight:700;letter-spacing:-.02em}
+.dhead .sub{font-size:.9rem;color:var(--muted)}
+.nav{display:flex;align-items:center;gap:8px}
+.nav .wk{min-width:230px;height:44px;border-radius:22px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600;padding:0 14px}
+.par{font-size:.7rem;font-weight:700;letter-spacing:.08em;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-text);text-transform:uppercase}
+.btn.pill{height:44px;border-radius:22px;padding:0 18px}
+.seg{display:inline-flex;padding:3px;border-radius:14px;background:var(--surface-2);gap:3px}
+.seg button{border:0;background:transparent;height:38px;padding:0 14px;border-radius:11px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.grid{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 14px 12px;overflow-x:auto}
+.gin{min-width:820px;display:grid;grid-template-columns:44px repeat(5,minmax(0,1fr));column-gap:8px}
+.gh{height:48px;display:flex;align-items:center;gap:8px;padding:0 8px;font-weight:700}
+.gh span{font-size:.82rem;font-weight:500;color:var(--muted)}
+.gh.today{color:var(--accent-text)}
+.gh.today span{color:var(--accent-ink);background:var(--accent);border-radius:999px;padding:2px 9px;font-weight:700}
+.hours{position:relative}
+.hours div{position:absolute;right:6px;font-size:.74rem;font-weight:600;color:var(--faint);transform:translateY(-8px)}
+.col{position:relative;border-radius:14px}
+.col.today{background:var(--today-col)}
+.col.off{background:repeating-linear-gradient(135deg,transparent 0 8px,var(--surface-2) 8px 9px)}
+.hl{position:absolute;left:0;right:0;border-top:1px solid var(--line)}
+.blk{position:absolute;border-radius:12px;padding:7px 9px;background:var(--k-bg);color:var(--k-fg);overflow:hidden;border:0;text-align:left;display:flex;flex-direction:column;gap:1px;transition:transform .12s, box-shadow .12s}
+.blk:hover{transform:translateY(-1px);box-shadow:var(--shadow);z-index:2}
+.blk b{font-size:.9rem;line-height:1.15}
+.blk span{font-size:.78rem;opacity:.92}
+.blk.opt{background:var(--x-bg);color:var(--x-fg);box-shadow:inset 0 0 0 1px var(--line-2)}
+.blk.next{box-shadow:0 0 0 2px var(--accent)}
+[data-theme="classic"] .blk{background:var(--surface-2);color:var(--text);box-shadow:inset 3px 0 0 var(--k-bar)}
+.nowline{position:absolute;left:-4px;right:0;height:0;border-top:2px solid var(--utcn-red,#e5484d);z-index:3}
+.nowline:before{content:"";position:absolute;left:-2px;top:-5px;width:8px;height:8px;border-radius:4px;background:var(--utcn-red,#e5484d)}
+.legend{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.82rem}
+.legend .chip{background:var(--k-bg);color:var(--k-fg)}
+.legend .note{color:var(--muted);margin-left:4px}
+.outside{padding:8px 0 0 52px;font-size:.84rem;color:var(--muted)}
+/* ---------- sheets / overlays ---------- */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;transition:opacity .2s}
+.scrim.on{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--surface);border-radius:26px 26px 0 0;max-height:88vh;overflow:auto;padding:10px 18px calc(22px + env(safe-area-inset-bottom));transform:translateY(100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);box-shadow:var(--shadow)}
+.sheet.on{transform:none}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line-2);margin:0 auto 10px}
+.sheet h2{margin:4px 0 12px;font-size:1.35rem}
+.sheet .sh-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media (min-width:700px){
+  .sheet{left:50%;right:auto;bottom:auto;top:50%;width:min(560px,92vw);border-radius:24px;transform:translate(-50%,-46%);opacity:0;transition:transform .2s,opacity .2s;max-height:86vh}
+  .sheet.on{transform:translate(-50%,-50%);opacity:1}
+  .sheet .grab{display:none}
+}
+.sec{font-size:.74rem;font-weight:700;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;margin:16px 4px 8px}
+.card{background:var(--surface-2);border-radius:18px;overflow:hidden}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 14px;border:0;background:none;width:100%;text-align:left;min-height:48px}
+.card > .row + .row{border-top:1px solid var(--line)}
+.row .v{color:var(--muted);text-align:right}
+a.row{color:inherit;text-decoration:none}
+.sw{width:52px;height:32px;border-radius:16px;border:0;background:var(--line-2);padding:3px;display:flex;flex:none;transition:background .15s}
+.sw i{width:26px;height:26px;border-radius:13px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.sw[aria-checked="true"]{background:var(--accent)}
+.sw[aria-checked="true"] i{transform:translateX(20px)}
+.themes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.themes button{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:.75rem;font-weight:600;color:var(--muted)}
+.themes .pv{width:100%;height:78px;border-radius:14px;padding:8px 7px;display:flex;flex-direction:column;gap:5px;border:1px solid var(--line)}
+.themes .pv i{display:block;height:8px;border-radius:3px}
+.themes .pv i:first-child{height:11px}
+.themes button[aria-pressed="true"]{color:var(--text)}
+.themes button[aria-pressed="true"] .pv{box-shadow:0 0 0 2px var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{height:40px;border-radius:20px;border:1px solid var(--line-2);background:var(--surface);padding:0 14px;font-weight:600}
+.chips button[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.detail .kv{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:.95rem;margin-top:8px}
+.detail .kv dt{color:var(--muted)}
+.detail .kv dd{margin:0}
+.detail .raw{margin-top:14px;font-size:.82rem;color:var(--faint);background:var(--surface-2);border-radius:12px;padding:10px 12px}
+.detail .acts{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.detail .acts a{flex:1}
+a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.chg{display:flex;gap:12px;align-items:flex-start;padding:8px 2px}
+.chg i{margin-top:7px;width:8px;height:8px;border-radius:4px;background:var(--accent);flex:none}
+.chg .t{font-weight:600}
+.chg .m{font-size:.88rem;color:var(--muted)}
+.chg s{opacity:.7}
+.srch{height:50px;border-radius:16px;border:2px solid var(--accent);background:var(--surface);display:flex;align-items:center;gap:10px;padding:0 14px}
+.srch input{border:0;outline:0;background:transparent;flex:1;font-size:1.05rem;min-width:0}
+.res{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--line);font-size:.92rem}
+.res .when{width:86px;flex:none;font-weight:700;font-size:.85rem}
+.res .what{min-width:0}
+.res .what small{display:block;color:var(--muted)}
+.res.now .when{color:var(--accent-text)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translate(-50%,140%);background:var(--text);color:var(--bg);padding:12px 16px;border-radius:14px;font-size:.9rem;font-weight:600;z-index:60;transition:transform .25s;max-width:92vw;display:flex;gap:12px;align-items:center}
+.toast:not(.on){visibility:hidden;transition:transform .25s,visibility 0s .25s}
+.toast.on{transform:translate(-50%,0)}
+.toast button{border:0;background:none;color:inherit;font-weight:700;text-decoration:underline;padding:4px}
+/* ---------- onboarding ---------- */
+.onb{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;display:flex;justify-content:center}
+.onb-in{width:min(460px,100%);min-height:100%;padding:max(22px,env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.prog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.prog i{height:4px;border-radius:2px;background:var(--line)}
+.prog i.on{background:var(--accent)}
+.onb h2{margin:0;font-size:1.9rem;letter-spacing:-.02em;line-height:1.1}
+.onb .lead{color:var(--muted);font-size:.95rem;margin-top:6px}
+.fac-list{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.fac-list button{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;border:0;background:none;text-align:left;padding:13px 16px;min-height:52px}
+.fac-list button + button{border-top:1px solid var(--line)}
+.fac-list button[aria-pressed="true"]{background:var(--accent-soft)}
+.fac-list .nm{font-weight:700}
+.fac-list .ds{font-size:.8rem;color:var(--muted)}
+.fac-list .soon{font-size:.75rem;color:var(--faint);white-space:nowrap}
+.fac-list button:disabled{cursor:default}
+.fac-list button:disabled .nm{font-weight:500;color:var(--muted)}
+.fac-list mark{background:var(--accent-soft);color:inherit;border-radius:4px}
+.lbl{font-size:.82rem;font-weight:600;color:var(--muted);margin-bottom:8px;display:block}
+.bub{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bub button{height:60px;border-radius:30px;border:1px solid var(--line-2);background:var(--surface);font-size:1.05rem;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;padding:0 6px}
+.bub button small{font-size:.66rem;font-weight:600;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bub button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.bub button[aria-pressed="true"] small{color:var(--accent-ink);opacity:.8}
+.big2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.big2 button{height:130px;border-radius:24px;border:1px solid var(--line-2);background:var(--surface);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.big2 button b{font-size:3rem;line-height:1}
+.big2 button span{font-size:.85rem;font-weight:600;color:var(--muted)}
+.big2 button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.big2 button[aria-pressed="true"] span{color:var(--accent-ink);opacity:.85}
+.onb .foot2{margin-top:auto;display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px}
+.onb .foot2.one{grid-template-columns:1fr}
+.onb .foot2 .btn{height:56px;border-radius:18px;font-size:1.05rem}
+.sum{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;font-size:.92rem}
+.sum div{display:flex;justify-content:space-between;gap:12px}
+.sum span{color:var(--muted)}
+.loading{padding:60px 0;text-align:center;color:var(--muted)}
+@media (min-width:900px){ h1.date{font-size:2.6rem} }
+@media (max-width:700px){
+  .dhead h1{font-size:1.5rem}
+  .dhead .nav{flex-wrap:wrap}
+  .nav .wk{min-width:0;flex:1;font-size:.85rem;padding:0 10px;gap:6px}
+  .gin{min-width:640px}
+  .grid{padding:8px 8px 10px}
+}
+@media (prefers-reduced-motion:reduce){ *{transition:none!important} }
+/* ---------- print (always light) ---------- */
+.print-root{display:none}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  html,body{background:#fff!important;color:#111!important}
+  body > *:not(.print-root){display:none!important}
+  .print-root{display:block!important;font-family:var(--font);color:#111}
+  .print-root h1{font-size:18pt;margin:0}
+  .print-root .pm{font-size:9.5pt;color:#444;margin:2px 0 10px}
+  .print-root table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:8.5pt}
+  .print-root th{background:#f1f2f6;font-weight:700;padding:5px;border:1px solid #c9ccd6}
+  .print-root td{border:1px solid #d6d8e0;vertical-align:top;padding:3px;height:15mm}
+  .print-root td.h{width:13mm;text-align:center;font-weight:700;color:#444;vertical-align:middle}
+  .print-root .pe{border-radius:4px;padding:3px 4px;margin:0 0 3px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .print-root .pe b{display:block;font-size:8.5pt}
+  .print-root .pe.k-C{background:#e3e8ff}.print-root .pe.k-S{background:#fff1d6}.print-root .pe.k-L{background:#dcf3e6}.print-root .pe.k-P{background:#fde4ef}.print-root .pe.k-X,.print-root .pe.k-SP{background:#f0f1f5}
+  .print-root .lg{margin-top:6px;font-size:8pt;color:#555}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-set" viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4" fill="var(--surface)"/><circle cx="15" cy="17" r="2.4" fill="var(--surface)"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="13.5" x2="15.4" y2="17.5"/><line x1="15.4" y1="6.5" x2="8.6" y2="10.5"/></symbol>
+    <symbol id="i-print" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><line x1="12" y1="1.5" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22.5"/><line x1="1.5" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22.5" y2="12"/><line x1="4.6" y1="4.6" x2="6.4" y2="6.4"/><line x1="17.6" y1="17.6" x2="19.4" y2="19.4"/><line x1="4.6" y1="19.4" x2="6.4" y2="17.6"/><line x1="17.6" y1="6.4" x2="19.4" y2="4.6"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="i-clover" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><circle cx="8.5" cy="8.5" r="3.6"/><circle cx="15.5" cy="8.5" r="3.6"/><circle cx="8.5" cy="15.5" r="3.6"/><circle cx="15.5" cy="15.5" r="3.6"/></g><path d="M12 12c2 3 3.5 6 6 9" stroke-width="1.6"/></symbol>
+  </defs>
+</svg>
+<main class="app" id="app"><div class="loading">Se încarcă orarul…</div></main>
+<div class="print-root" id="print-root"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+(() => {
+/* ================= config ================= */
+const CONFIG = {
+  // Unde ajung raportările de greșeli. Pune adresa ta de e-mail sau un link (formular / GitHub issues).
+  report: "https://github.com/Fane-dinte/orar-utcn/issues/new",
+  site: "https://utcna.pages.dev",
+};
+const DAYS = ["Luni","Marți","Miercuri","Joi","Vineri"], DSH = ["Lu","Ma","Mi","Jo","Vi"];
+const MON = ["ian","feb","mar","apr","mai","iun","iul","aug","sept","oct","nov","dec"];
+const MONL = ["ianuarie","februarie","martie","aprilie","mai","iunie","iulie","august","septembrie","octombrie","noiembrie","decembrie"];
+const KIND = {C:"Curs",S:"Seminar",L:"Laborator",P:"Proiect",X:"Întâlnire",SP:"Sport"};
+const LANGS = {en:"Engleză",fr:"Franceză",de:"Germană"};
+const THEMES = [["light","Light"],["dark","Dark"],["amoled","AMOLED"],["utcn","UTCN"],["classic","Classic"]];
+const THEME_BG = {light:"#fbfbfd",dark:"#111216",amoled:"#000000",utcn:"#f6f8fb",classic:"#0f1011"};
+
+/* ================= helpers ================= */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad = (n) => String(n).padStart(2, "0");
+const hh = (x) => { const h = Math.floor(x), m = Math.round((x - h) * 60); return pad(h) + ":" + pad(m); };
+const hs = (x) => { const h = Math.floor(x), m = Math.round((x - h) * 60); return m ? h + ":" + pad(m) : String(h); };
+const parseD = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+const isoD = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const addD = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const icon = (id, cls = "") => `<svg class="i ${cls}" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+const ls = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+  raw(k) { try { return localStorage.getItem(k); } catch { return null; } },
+};
+function toast(msg, action, fn, ms = 3600) {
+  const t = $("#toast");
+  t.innerHTML = esc(msg) + (action ? ` <button type="button">${esc(action)}</button>` : "");
+  if (action) t.querySelector("button").onclick = () => { t.classList.remove("on"); fn(); };
+  t.classList.add("on");
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("on"), ms);
+}
+
+/* ================= state ================= */
+const DEF = { v: 2, fac: null, group: null, sg: 1, theme: null, opts: { lang: null, ped: null, cm: null, fac: null }, view: "auto", fs: 1, notify: false, seenChanges: null };
+let P = Object.assign({}, DEF, ls.get("orar2") || {});
+P.opts = Object.assign({}, DEF.opts, P.opts || {});
+// migrate the previous site's settings (orar-aut-group = "3-30111", orar-aut-sg = "2")
+(() => {
+  if (P.group) return;
+  const og = ls.raw("orar-aut-group"); const osg = ls.raw("orar-aut-sg");
+  if (og) { const m = /(\d{5,6})/.exec(og); if (m) { P.fac = "ac"; P.group = m[1]; P.sg = osg === "2" ? 2 : 1; P.migrated = true; } }
+})();
+const save = () => ls.set("orar2", P);
+const S = { idx: null, data: {}, changes: [], view: null, wi: 0, day: 0, tmp: null, now: new Date() };
+
+function applyTheme() {
+  const sysDark = matchMedia("(prefers-color-scheme: dark)").matches;
+  const t = P.theme || (sysDark ? "dark" : "light");
+  document.documentElement.dataset.theme = t;
+  document.documentElement.style.setProperty("--fs", P.fs || 1);
+  const m = $('meta[name="theme-color"]'); if (m) m.content = THEME_BG[t];
+}
+applyTheme();
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (!P.theme) applyTheme(); });
+
+/* ================= data ================= */
+async function getJSON(u) { const r = await fetch(u, { cache: "no-cache" }); if (!r.ok) throw new Error(u + " " + r.status); return r.json(); }
+function groupInfo(id) {
+  for (const [dept, d] of Object.entries(S.idx.depts)) { const g = d.groups.find((x) => x.id === id); if (g) return Object.assign({ dept }, g); }
+  return null;
+}
+async function loadDept(dept) {
+  if (!S.data[dept]) S.data[dept] = await getJSON(`data/${dept}.json`);
+  return S.data[dept];
+}
+const curGroupId = () => (S.tmp && S.tmp.group) || P.group;
+const curSg = () => (S.tmp && S.tmp.group ? S.tmp.sg : P.sg) || 1;
+
+/* ================= calendar ================= */
+const CAL = () => S.idx.calendar;
+function today() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+function weekStart(i) { return parseD(CAL().weeks[i][0]); }
+function weekNo(i) { return CAL().weeks[i][1]; }
+function dateOf(i, d) { return addD(weekStart(i), d); }
+function holiday(date) { const h = CAL().holidays.find((x) => x[0] === isoD(date)); return h ? h[1] : null; }
+function inRange(date, r) { return r && date >= parseD(r[0]) && date <= parseD(r[1]); }
+function phase(date = today()) {
+  const c = CAL();
+  if (inRange(date, c.vacation)) return "vacation";
+  if (inRange(date, c.session)) return "session";
+  if (inRange(date, c.retake)) return "retake";
+  const last = addD(weekStart(c.weeks.length - 1), 6);
+  if (date > last) return "after";
+  if (date < weekStart(0)) return "before";
+  return "term";
+}
+function initialWeek() {
+  const t = today(), w = CAL().weeks;
+  let wi = w.length - 1, day = 0;
+  for (let i = 0; i < w.length; i++) {
+    const st = parseD(w[i][0]), en = addD(st, 6);
+    if (t <= en) { wi = i; const dd = Math.round((t - st) / 864e5); day = dd >= 0 && dd < 5 ? dd : 0; if (dd >= 5 && i < w.length - 1) { wi = i + 1; day = 0; } break; }
+  }
+  if (t < parseD(w[0][0])) { wi = 0; day = 0; }
+  return { wi, day };
+}
+const occurs = (e, n) => e.w ? e.w.includes(n) : e.p === "odd" ? n % 2 === 1 : e.p === "even" ? n % 2 === 0 : true;
+function weekText(e) {
+  if (e.w) { const w = e.w, run = w.length > 2 && w.every((x, i) => !i || x === w[i - 1] + 1); return "săpt. " + (run ? `${w[0]}–${w[w.length - 1]}` : w.join(", ")); }
+  if (e.p === "odd") return "săpt. impare";
+  if (e.p === "even") return "săpt. pare";
+  return "";
+}
+
+/* ================= filtering by options ================= */
+function visibleFor(e) {
+  const o = P.opts;
+  if (e.opt === "lang") { if (o.lang && o.lang !== "all" && e.lang && e.lang !== o.lang) return false; return true; }
+  if (e.opt === "ped" && o.ped === false) return false;
+  if (e.opt === "cm" && o.cm === false) return false;
+  if (e.opt === "fac" && o.fac === false) return false;
+  return true;
+}
+function langCtx(gid) {
+  const g = groupInfo(gid), d = g && S.data[g.dept];
+  const sheet = d && (d.groups.find((x) => x.id === gid) || {}).sheet;
+  return { g, sheet, pool: (d && d.langs && d.langs[sheet]) || [] };
+}
+function langOptions(gid) {
+  const { pool } = langCtx(gid);
+  const own = ((S.data[groupInfo(gid).dept] || {}).entries || {})[gid] || [];
+  return ["en", "fr", "de"].filter((l) => pool.some((x) => x.lang === l) || own.some((x) => x.lang === l));
+}
+function chosenLangSlots(gid) {
+  const L = P.opts.lang; if (!L || L === "all") return null;
+  const { g, sheet, pool } = langCtx(gid);
+  const mine = pool.filter((x) => x.lang === L); if (!mine.length) return null;
+  const pick = (P.opts.langSlot || {})[sheet];
+  if (pick && mine.some((x) => x.id === pick)) return mine.filter((x) => x.id === pick);
+  const own = mine.filter((x) => x.groups.includes(g.label));
+  if (own.length) return own;
+  if (mine.length === 1) return mine;
+  return mine.map((x) => Object.assign({}, x, { pick: true }));
+}
+function needsAsk(e) {
+  if (e.pick) return true;
+  if (e.opt === "lang") return !P.opts.lang && langOptions(curGroupId()).length > 0;
+  if (e.opt === "ped" || e.opt === "cm" || e.opt === "fac") return P.opts[e.opt] == null;
+  return false;
+}
+function entriesFor(gid, sg) {
+  const g = groupInfo(gid); if (!g) return [];
+  const d = S.data[g.dept]; if (!d) return [];
+  const base = (d.entries[gid] || []).filter((e) => e.sg.includes(sg));
+  const ch = chosenLangSlots(gid);
+  if (!ch) return base;
+  return base.filter((e) => e.opt !== "lang").concat(ch.map((x) => Object.assign({}, x, { sg: g.sgs, all: true, withG: x.groups.filter((l) => l !== g.label) }))).sort((a, b) => a.d - b.d || a.s - b.s || a.e - b.e);
+}
+function dayList(i, d, opts = {}) {
+  const n = weekNo(i);
+  const list = entriesFor(curGroupId(), curSg()).filter((e) => e.d === d && occurs(e, n));
+  return opts.all ? list : list.filter(visibleFor);
+}
+function whoText(g, e) {
+  if (e.withG) return e.withG.length ? `cu ${e.withG.length > 1 ? "grupele" : "grupa"} ${e.withG.join(", ")}` : (e.groups && e.groups.length === 1 ? "" : "");
+  if (e.n > 1) return e.k === "C" || e.k === "X" ? (e.n > 2 ? "toată seria" : "cu altă grupă") : `cu ${e.n - 1} ${e.n - 1 === 1 ? "altă grupă" : "alte grupe"}`;
+  if (g.sgs.length > 1) return e.all ? "toată grupa" : "semigrupa " + e.sg.join(", ");
+  return "";
+}
+function placeOf(e) { const p = e.pl && S.idx.places[e.pl]; return p ? { place: p[0], maps: p[1] } : null; }
+function mapsUrl(e) { const p = placeOf(e); return p ? "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(p.maps) : null; }
+function metaLine(e) { return [KIND[e.k] || "", e.r || "", e.prof || ""].filter(Boolean).join(" · "); }
+
+/* ================= routing / boot ================= */
+function parseHash() {
+  const h = decodeURIComponent((location.hash || "").replace(/^#/, ""));
+  const m = /^([0-9A-Za-z\-]+?)(?:-([12]))?$/.exec(h);
+  if (!m) return null;
+  return { group: m[1], sg: m[2] ? +m[2] : null };
+}
+async function boot() {
+  try {
+    S.idx = await getJSON("data/index.json");
+  } catch (e) {
+    $("#app").innerHTML = `<div class="empty"><b>Nu am putut încărca orarul.</b>Verifică conexiunea și reîncarcă pagina.</div>`;
+    return;
+  }
+  getJSON("data/changes.json").then((c) => { S.changes = c || []; const g = P.group && groupInfo(curGroupId()); if (g && S.data[g.dept] && !$(".onb")) render(); }).catch(() => {});
+  const fh = parseHash();
+  if (fh && groupInfo(fh.group)) {
+    const g = groupInfo(fh.group);
+    const sg = fh.sg && g.sgs.includes(fh.sg) ? fh.sg : g.sgs[0];
+    if (!P.group) { P.fac = g.fac || "ac"; P.group = g.id; P.sg = sg; save(); }
+    else if (P.group !== g.id || P.sg !== sg) S.tmp = { group: g.id, sg };
+  }
+  if (P.group && !groupInfo(P.group)) { P.group = null; }
+  const iw = initialWeek(); S.wi = iw.wi; S.day = iw.day;
+  if (!P.group) { onboarding(1); return; }
+  await openMain();
+}
+async function openMain() {
+  const g = groupInfo(curGroupId());
+  $("#app").innerHTML = `<div class="loading">Se încarcă orarul…</div>`;
+  try { await loadDept(g.dept); } catch { $("#app").innerHTML = `<div class="empty"><b>Nu am putut încărca orarul grupei.</b>Reîncearcă puțin mai târziu.</div>`; return; }
+  render();
+  afterRender();
+}
+window.addEventListener("hashchange", () => { const fh = parseHash(); if (fh && groupInfo(fh.group)) { const g = groupInfo(fh.group); S.tmp = g.id === P.group && (fh.sg || P.sg) === P.sg ? null : { group: g.id, sg: fh.sg && g.sgs.includes(fh.sg) ? fh.sg : g.sgs[0] }; openMain(); } });
+
+/* ================= main render ================= */
+const wide = matchMedia("(min-width: 900px)");
+wide.addEventListener?.("change", () => { if (P.group) render(); });
+function viewMode() { return P.view === "day" || P.view === "week" ? P.view : wide.matches ? "week" : "day"; }
+function render() {
+  if (!S.idx || !P.group) return;
+  S.view = viewMode();
+  if (S.view === "week") renderWeek(); else renderDay();
+}
+function groupLine(g, sg) {
+  const prog = S.idx.programs[g.prog];
+  return { prog, sgTxt: g.sgs.length > 1 ? `semigrupa ${sg}` : "" };
+}
+function cloverHtml() {
+  const ph = phase();
+  if (ph !== "session" && ph !== "retake") return "";
+  return `<button class="clover" type="button" id="clover" title="cu patrufoi" aria-label="trifoi cu patru foi">${icon("clover")}</button>`;
+}
+function tmpBanner() {
+  if (!S.tmp) return "";
+  const g = groupInfo(S.tmp.group);
+  return `<div class="banner"><span class="grow">Te uiți la orarul <b>${esc(g.label)}${g.sgs.length > 1 ? "/" + S.tmp.sg : ""}</b>, primit printr-un link.</span><button class="link" type="button" data-act="adopt">Fă-l al meu</button><button class="link" type="button" data-act="back">Înapoi</button></div>`;
+}
+function phaseBanner() {
+  const ph = phase(), c = CAL();
+  const f = (s) => { const d = parseD(s); return `${d.getDate()} ${MON[d.getMonth()]}`; };
+  if (ph === "vacation") return `<div class="banner"><span class="grow"><b>Vacanță</b> până pe ${f(c.vacation[1])}. Mai jos e prima săptămână de după.</span></div>`;
+  if (ph === "session") return `<div class="banner"><span class="grow"><b>Sesiune</b>: ${f(c.session[0])} – ${f(c.session[1])}. Succes la examene!</span></div>`;
+  if (ph === "retake") return `<div class="banner"><span class="grow"><b>Sesiune de restanțe</b>: ${f(c.retake[0])} – ${f(c.retake[1])}.</span></div>`;
+  if (ph === "after") return `<div class="banner"><span class="grow">Semestrul s-a terminat. Sesiunea: ${f(c.session[0])} – ${f(c.session[1])}.</span></div>`;
+  return "";
+}
+function footHtml() {
+  const g = groupInfo(curGroupId());
+  const d = S.idx.depts[g.dept];
+  const mine = myChanges();
+  const stamp = d.stamp ? d.stamp.replace(/,?\s*ora\s*/, " · ").replace(/\.2026|\/2026/, "") : "";
+  const label = mine.length ? `<span class="dot"></span>${mine.length} ${mine.length === 1 ? "modificare" : "modificări"} la tine` : "Ce s-a schimbat";
+  return `<div class="foot" id="foot" style="justify-content:flex-end">
+    <span class="acts"><button class="iconbtn ghost" type="button" data-act="search" aria-label="Caută o sală, un profesor sau o materie">${icon("search")}</button><button class="iconbtn ghost" type="button" data-act="print" aria-label="Printează orarul">${icon("print")}</button><button class="iconbtn ghost" type="button" data-act="share" aria-label="Trimite orarul grupei">${icon("share")}</button></span></div>
+    <div id="install-slot"></div>
+    <div class="legal">Preluat automat din <a href="${esc(d.source.page)}" target="_blank" rel="noopener">orarul oficial</a>. Nu e o pagină oficială UTCN.${CONFIG.report ? ` · <button class="link" type="button" data-act="report" style="border:0;background:none;color:var(--accent-text);padding:0;font-size:inherit">Am găsit o greșeală</button>` : ""}</div>`;
+}
+function viewSeg(long) {
+  const v = S.view || viewMode();
+  return `<div class="seg ${long ? "" : "sm"}" role="group" aria-label="Vedere"><button type="button" data-view="day" aria-pressed="${v === "day"}">Zi</button><button type="button" data-view="week" aria-pressed="${v === "week"}">${long ? "Săptămână" : "Săpt."}</button></div>`;
+}
+function setBtn() {
+  const n = myChanges().length;
+  return `<button class="iconbtn${n ? " has-dot" : ""}" type="button" data-act="settings" aria-label="Setări${n ? `, ${n} modificări noi în orar` : ""}">${icon("set")}</button>`;
+}
+function renderFootOnly() { const f = $("#foot"); if (f && S.idx && P.group) { const t = document.createElement("div"); t.innerHTML = footHtml(); f.replaceWith(t.firstElementChild); } }
+
+/* ---------- day view (phone) ---------- */
+function renderDay() {
+  const gid = curGroupId(), sg = curSg(), g = groupInfo(gid);
+  const i = S.wi, d = S.day, n = weekNo(i), date = dateOf(i, d);
+  const isToday = isoD(date) === isoD(today());
+  const parity = n % 2 ? "impară" : "pară";
+  let strip = "";
+  for (let k = 0; k < 5; k++) {
+    const dt = dateOf(i, k), off = holiday(dt), cnt = off ? 0 : dayList(i, k).length;
+    strip += `<button type="button" role="tab" data-day="${k}" aria-selected="${k === d}" class="${isoD(dt) === isoD(today()) ? "today" : ""} ${off ? "off" : ""}" aria-label="${DAYS[k]} ${dt.getDate()} ${MONL[dt.getMonth()]}${cnt ? `, ${cnt} ore` : ""}"><span class="n">${DSH[k]}</span><span class="d">${dt.getDate()}</span><span class="dots">${"<i></i>".repeat(Math.min(cnt, 5))}</span></button>`;
+  }
+  $("#app").innerHTML = `
+    <header class="top">
+      <div>
+        <div class="kicker">${/^\d{1,2}$/.test(g.label) ? "gr. " : ""}${esc(g.label)}${g.sgs.length > 1 ? " · sg. " + sg : ""} · săpt. ${n} ${parity} ${cloverHtml()}</div>
+        <h1 class="date">${DAYS[d]}, ${date.getDate()} ${MON[date.getMonth()]}</h1>
+      </div>
+      <div class="top-actions">${setBtn()}</div>
+    </header>
+    ${tmpBanner()}${phaseBanner()}
+    <div id="hero-slot">${heroHtml()}</div>
+    <nav class="days" role="tablist" aria-label="Zilele săptămânii">${strip}</nav>
+    <div class="wknav"><span class="wkl"><button type="button" data-act="prevw" aria-label="Săptămâna anterioară">${icon("left")}</button><span>${weekRange(i)}</span><button type="button" data-act="nextw" aria-label="Săptămâna următoare">${icon("right")}</button></span><span class="wkr">${isToday ? "" : `<button type="button" class="azi" data-act="todayw">Azi</button>`}${viewSeg()}</span></div>
+    <section class="list" id="list" aria-live="polite">${dayItems(i, d, isToday)}</section>
+    ${footHtml()}`;
+  bindSwipe($("#list"));
+}
+function weekRange(i) {
+  const a = dateOf(i, 0), b = dateOf(i, 4);
+  return a.getMonth() === b.getMonth() ? `${a.getDate()}–${b.getDate()} ${MON[b.getMonth()]}` : `${a.getDate()} ${MON[a.getMonth()]} – ${b.getDate()} ${MON[b.getMonth()]}`;
+}
+function nowH() { const n = new Date(); return n.getHours() + n.getMinutes() / 60; }
+function dayItems(i, d, isToday) {
+  const date = dateOf(i, d);
+  const off = holiday(date);
+  if (off) { S._list = []; return endCard(i, d, [], isToday, `Zi liberă: ${off}`); }
+  const all = dayList(i, d, { all: true });
+  const list = all.filter(visibleFor);
+  if (!list.length) { S._list = []; return endCard(i, d, [], isToday, all.length ? "Ai ascuns orele opționale din ziua asta." : null); }
+  const g = groupInfo(curGroupId());
+  const nh = nowH();
+  let html = "", prevEnd = null, asked = new Set();
+  list.forEach((e, k) => {
+    if (prevEnd != null && e.s - prevEnd >= 2) html += `<div class="gap">${e.s - prevEnd} ore libere</div>`;
+    const past = isToday && e.e <= nh, now = isToday && e.s <= nh && e.e > nh;
+    const x = [weekText(e), whoText(g, e)].filter(Boolean).join(" · ");
+    const optCls = e.opt && e.opt !== "lang" ? " opt" : "";
+    html += `<button type="button" class="ev k-${e.k}${optCls}${past ? " past" : ""}${now ? " now" : ""}" data-ev="${k}">
+      <span class="tsq"><b>${pad(Math.floor(e.s))}</b><small>–${hs(e.e)}</small></span>
+      <span class="ev-b"><span class="ev-t">${esc(e.t || e.a || "Activitate")}</span><span class="ev-m">${esc(metaLine(e))}${e.opt && e.opt !== "lang" ? " · opțional" : ""}</span>${x ? `<span class="ev-x">${esc(x)}</span>` : ""}</span></button>`;
+    const ak = e.pick ? "slot" : e.opt;
+    if (needsAsk(e) && !asked.has(ak)) { asked.add(ak); html += askHtml(e); }
+    prevEnd = Math.max(prevEnd ?? 0, e.e);
+  });
+  S._list = list;
+  return html + endCard(i, d, list, isToday);
+}
+function nextAfter(i, d) {
+  for (let w = i; w < CAL().weeks.length; w++) for (let k = w === i ? d + 1 : 0; k < 5; k++) {
+    if (holiday(dateOf(w, k))) continue;
+    const l = dayList(w, k); if (l.length) return { w, k, e: l[0] };
+  }
+  return null;
+}
+function dur(h) { const m = Math.max(1, Math.round(h * 60)); return m >= 60 ? `${Math.floor(m / 60)}h${m % 60 ? " " + (m % 60) + "m" : ""}` : `${m} min`; }
+function endCard(i, d, list, isToday, note) {
+  const nh = nowH();
+  const end = list.length ? Math.max(...list.map((e) => e.e)) : null;
+  const hours = list.reduce((a, e) => a + (e.e - e.s), 0);
+  const fri = d === 4;
+  let big, sub;
+  if (!list.length) { big = fri ? "Vineri liberă" : "Zi liberă"; sub = note || (fri ? "Weekendul a început deja." : "Nicio oră azi. Profită."); }
+  else {
+    big = `Liber de la ${hh(end)}`;
+    if (fri) sub = isToday && nh < end ? `Weekendul începe în ${dur(end - nh)}.` : isToday ? "E weekend. Pe bune." : "Apoi începe weekendul.";
+    else if (isToday && nh >= end) sub = "Gata pe azi.";
+    else sub = hours <= 2 ? "O singură oră azi." : hours <= 4 ? `Doar ${hours} ore azi.` : `${hours} ore azi.`;
+    if (fri && hours <= 2) sub = (isToday && nh < end ? `Doar o oră și weekendul începe în ${dur(end - nh)}.` : "Doar o oră, apoi weekend.");
+  }
+  const nx = nextAfter(i, d);
+  let nxt = "";
+  if (nx) {
+    const dt = dateOf(nx.w, nx.k), e = nx.e;
+    const when = nx.w === i ? DAYS[nx.k] : `${DAYS[nx.k]}, ${dt.getDate()} ${MON[dt.getMonth()]}`;
+    nxt = `<button type="button" class="nx k-${e.k}" data-goto="${nx.w}:${nx.k}"><span class="tsq" style="width:44px;height:44px;border-radius:12px"><b>${pad(Math.floor(e.s))}</b></span><span><small>Următoarea oră · ${esc(when)}</small><b>${esc(e.t || e.a)}</b> <span style="color:var(--muted)">· ${esc(metaLine(e))}</span></span></button>`;
+  }
+  let nl = "";
+  if (nx) { const dt = dateOf(nx.w, nx.k); nl = ` · <button type="button" data-goto="${nx.w}:${nx.k}">următoarea: ${nx.w === i ? DSH[nx.k] : DSH[nx.k] + " " + dt.getDate() + " " + MON[dt.getMonth()]} ${hs(nx.e.s)}, ${esc(nx.e.t || nx.e.a)}</button>`; }
+  if (!list.length) return `<div class="empty"><b>${fri ? "Vineri liberă" : "Zi liberă"}</b>${esc(note || "Nicio oră.")}</div><div class="endl" style="margin-left:0;text-align:center">${nl.replace(/^ · /, "")}</div>`;
+  return `<div class="endl">liber de la ${hh(end)}${fri ? ", apoi weekend" : ""}${nl}</div>`;
+}
+function askHtml(e) {
+  if (e.pick) {
+    const all = chosenLangSlots(curGroupId()) || [];
+    return `<div class="ask" data-ask="slot"><div class="q">La ce oră de ${LANGS[e.lang].toLowerCase()} mergi?</div><div class="row">${all.map((x) => `<button type="button" data-slot="${esc(x.id)}">${DSH[x.d]} ${hs(x.s)}–${hs(x.e)}<br><small style="color:var(--muted)">${esc(x.r || "")} · ${esc(x.groups.join(", "))}</small></button>`).join("")}</div><div class="hint">Orarul pune ora de limbă la o singură grupă, dar o fac toți cei care au ales-o.</div></div>`;
+  }
+  if (e.opt === "lang") {
+    const langs = langOptions(curGroupId());
+    return `<div class="ask" data-ask="lang"><div class="q">Ce limbă străină faci?</div><div class="row">${langs.map((l) => `<button type="button" data-lang="${l}">${LANGS[l]}</button>`).join("")}<button type="button" data-lang="all">Nu știu încă</button></div><div class="hint">Îți arăt ora limbii tale, chiar dacă în orar e trecută la altă grupă. Schimbi din Setări.</div></div>`;
+  }
+  const q = { ped: "Faci modulul pedagogic?", cm: "Te-ai înscris la Complemente de matematică?", fac: "Mergi la ora asta facultativă?" }[e.opt];
+  return `<div class="ask" data-ask="${e.opt}"><div class="q">${q}</div><div class="row"><button type="button" data-yes="1">Da, arat-o</button><button type="button" class="pri" data-yes="0">Nu, ascunde</button></div><div class="hint">Te întreb o singură dată. Schimbi din Setări › Ore opționale.</div></div>`;
+}
+function heroHtml() {
+  if (S.view !== "day") return "";
+  const t = today();
+  const i = S.wi;
+  if (isoD(dateOf(i, S.day)) !== isoD(t)) return "";
+  const list = dayList(i, S.day);
+  const nh = nowH();
+  const cur = list.find((e) => e.s <= nh && e.e > nh);
+  const nxt = list.find((e) => e.s > nh);
+  const e = cur || nxt;
+  if (!e) return list.length ? `<div class="hero" style="opacity:.92"><div><div class="lab">Azi</div><div class="ttl">Gata pe azi</div><div class="sub">Ai terminat toate orele.</div></div></div>` : "";
+  let cd;
+  if (cur) cd = `<small>până la</small>${hh(cur.e)}`;
+  else { const m = Math.round((e.s - nh) * 60); cd = `<small>în</small>${m >= 60 ? Math.floor(m / 60) + "h " + (m % 60 ? (m % 60) + "m" : "") : m + " min"}`; }
+  const idx = (S._list || []).indexOf(e);
+  return `<button type="button" class="hero" data-hero="${idx}"><div><div class="lab">${cur ? "Acum" : "Urmează · " + hh(e.s)}</div><div class="ttl">${esc(e.t || e.a)}</div><div class="sub">${esc(metaLine(e))}</div></div><div class="cd">${cd}</div></button>`;
+}
+
+/* ---------- week view (desktop) ---------- */
+function renderWeek() {
+  const gid = curGroupId(), sg = curSg(), g = groupInfo(gid);
+  const i = S.wi, n = weekNo(i), prog = S.idx.programs[g.prog];
+  const days = [0, 1, 2, 3, 4].map((d) => ({ d, date: dateOf(i, d), off: holiday(dateOf(i, d)), list: holiday(dateOf(i, d)) ? [] : dayList(i, d) }));
+  const all = days.flatMap((x) => x.list);
+  let minH = all.length ? Math.floor(Math.min(...all.map((e) => e.s))) : 8;
+  let maxH = all.length ? Math.ceil(Math.max(...all.map((e) => e.e))) : 18;
+  minH = Math.min(minH, 8); if (maxH - minH < 8) maxH = minH + 8;
+  const H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hour")) || 52;
+  const height = (maxH - minH) * H;
+  const t = today();
+  let hours = "";
+  for (let h = minH; h <= maxH; h += 2) hours += `<div style="top:${(h - minH) * H}px">${pad(h)}</div>`;
+  let lines = "";
+  for (let h = minH; h <= maxH; h += 2) lines += `<div class="hl" style="top:${(h - minH) * H}px"></div>`;
+  const nh = nowH();
+  let next = null;
+  for (const x of days) if (isoD(x.date) === isoD(t)) next = x.list.find((e) => e.e > nh) || null;
+  let cols = "";
+  S._wk = [];
+  for (const x of days) {
+    const isT = isoD(x.date) === isoD(t);
+    const lanes = layoutLanes(x.list);
+    let blocks = "";
+    x.list.forEach((e) => {
+      const L = lanes.get(e), k = S._wk.push(e) - 1;
+      const top = (e.s - minH) * H + 2, hgt = Math.max(28, (e.e - e.s) * H - 4);
+      const w = 100 / L.n;
+      const sub = [KIND[e.k], e.r].filter(Boolean).join(" · ") + (weekText(e) && !e.w ? ` · ${weekText(e)}` : "");
+      blocks += `<button type="button" class="blk k-${e.k}${e.opt && e.opt !== "lang" ? " opt" : ""}${e === next ? " next" : ""}" data-wk="${k}" style="top:${top}px;height:${hgt}px;left:calc(${L.i * w}% + 2px);width:calc(${w}% - 4px)" title="${esc((e.t || e.a) + " · " + hs(e.s) + "–" + hs(e.e))}"><b>${esc(e.t || e.a)}</b><span>${esc(sub)}${e.opt && e.opt !== "lang" ? " · opțional" : ""}</span>${e.e - e.s >= 2 && L.n === 1 ? `<span>${hs(e.s)}–${hs(e.e)}</span>` : ""}</button>`;
+    });
+    const nl = isT && nh >= minH && nh <= maxH ? `<div class="nowline" style="top:${(nh - minH) * H}px"></div>` : "";
+    cols += `<div class="col${isT ? " today" : ""}${x.off ? " off" : ""}" style="height:${height}px">${lines}${blocks}${nl}</div>`;
+  }
+  const heads = days.map((x) => { const isT = isoD(x.date) === isoD(t); return `<div class="gh${isT ? " today" : ""}">${DAYS[x.d]} <span>${x.date.getDate()}${isT ? " · azi" : ""}</span>${x.off ? `<span title="${esc(x.off)}">liber</span>` : ""}</div>`; }).join("");
+  $("#app").innerHTML = `
+    <header class="dhead">
+      <div><h1>Orar ${/^\d{1,2}$/.test(g.label) ? "grupa " : ""}${esc(g.label)} ${cloverHtml()}</h1><div class="sub">${esc(prog.name)} · anul ${["I","II","III","IV"][g.year - 1] || g.year}${g.sub ? " · " + esc(g.sub) : ""}${g.sgs.length > 1 ? " · semigrupa " + sg : ""}</div></div>
+      <div class="nav">
+        <button class="iconbtn" type="button" data-act="prevw" aria-label="Săptămâna anterioară">${icon("left")}</button>
+        <div class="wk">Săpt. ${n} · ${weekRange(i)} <span class="par">${n % 2 ? "impară" : "pară"}</span></div>
+        <button class="iconbtn" type="button" data-act="nextw" aria-label="Săptămâna următoare">${icon("right")}</button>
+        <button class="btn pill" type="button" data-act="todayw">Azi</button>
+      </div>
+      <div class="nav">
+        ${viewSeg(true)}
+        ${setBtn()}
+      </div>
+    </header>
+    ${tmpBanner()}${phaseBanner()}
+    <section class="grid" aria-label="Orarul săptămânii"><div class="gin"><div></div>${heads}<div class="hours" style="height:${height}px">${hours}</div>${cols}</div></section>
+    <div class="legend"><span class="chip k-C">Curs</span><span class="chip k-S">Seminar</span><span class="chip k-L">Laborator</span><span class="chip k-P">Proiect</span><span class="note">Apasă pe o oră pentru detalii și traseu în Maps.</span></div>
+    ${footHtml()}`;
+}
+function layoutLanes(list) {
+  const res = new Map(); const sorted = [...list].sort((a, b) => a.s - b.s || b.e - a.e);
+  let cluster = [], end = -1;
+  const flush = () => { const lanesEnd = []; for (const e of cluster) { let li = lanesEnd.findIndex((x) => x <= e.s); if (li < 0) { li = lanesEnd.length; lanesEnd.push(e.e); } else lanesEnd[li] = e.e; res.set(e, { i: li }); } for (const e of cluster) res.get(e).n = lanesEnd.length; cluster = []; };
+  for (const e of sorted) { if (e.s >= end && cluster.length) flush(); cluster.push(e); end = Math.max(end, e.e); }
+  if (cluster.length) flush();
+  return res;
+}
+
+/* ================= interactions ================= */
+document.addEventListener("click", (ev) => {
+  const t = ev.target.closest("button, a");
+  if (!t) return;
+  if (t.dataset.day != null) { S.day = +t.dataset.day; render(); return; }
+  if (t.dataset.goto) { const [w, k] = t.dataset.goto.split(":").map(Number); S.wi = w; S.day = k; render(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (t.dataset.view) { P.view = t.dataset.view; save(); render(); return; }
+  if (t.dataset.ev != null && S._list) { openDetail(S._list[+t.dataset.ev]); return; }
+  if (t.dataset.wk != null && S._wk) { openDetail(S._wk[+t.dataset.wk]); return; }
+  if (t.dataset.hero != null && S._list && +t.dataset.hero >= 0) { openDetail(S._list[+t.dataset.hero]); return; }
+  const ask = t.closest(".ask");
+  if (ask) {
+    const k = ask.dataset.ask;
+    if (k === "lang") P.opts.lang = t.dataset.lang;
+    else if (k === "slot") { P.opts.langSlot = Object.assign({}, P.opts.langSlot, { [langCtx(curGroupId()).sheet]: t.dataset.slot }); }
+    else P.opts[k] = t.dataset.yes === "1";
+    save(); render(); toast("Salvat. Poți schimba din Setări."); return;
+  }
+  const a = t.dataset.act;
+  if (!a) return;
+  if (a === "settings") openSettings();
+  else if (a === "prevw") { if (S.wi > 0) { S.wi--; render(); } }
+  else if (a === "nextw") { if (S.wi < CAL().weeks.length - 1) { S.wi++; render(); } }
+  else if (a === "todayw") { const iw = initialWeek(); S.wi = iw.wi; S.day = iw.day; render(); }
+  else if (a === "share") share();
+  else if (a === "print") openPrint();
+  else if (a === "changes") openChanges();
+  else if (a === "search") openSearch();
+  else if (a === "report") report();
+  else if (a === "adopt") { P.group = S.tmp.group; P.sg = S.tmp.sg; S.tmp = null; save(); history.replaceState(null, "", location.pathname); render(); toast("Gata, e grupa ta acum."); }
+  else if (a === "back") { S.tmp = null; history.replaceState(null, "", location.pathname); openMain(); }
+});
+document.addEventListener("click", (ev) => { if (ev.target.closest("#clover")) toast("Pregătit, cu patrufoi."); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeSheet();
+  if ($(".sheet.on") || $(".onb") || /input|select|textarea/i.test(document.activeElement?.tagName || "")) return;
+  if (e.key === "ArrowRight") step(1); else if (e.key === "ArrowLeft") step(-1);
+});
+function step(dir) {
+  if (S.view === "week") { const ni = S.wi + dir; if (ni >= 0 && ni < CAL().weeks.length) { S.wi = ni; render(); } return; }
+  let d = S.day + dir, i = S.wi;
+  if (d > 4) { if (i < CAL().weeks.length - 1) { i++; d = 0; } else d = 4; }
+  if (d < 0) { if (i > 0) { i--; d = 4; } else d = 0; }
+  S.wi = i; S.day = d; render();
+}
+function bindSwipe(el) {
+  if (!el) return;
+  let x0 = null, y0 = null, t0 = 0;
+  el.addEventListener("touchstart", (e) => { const p = e.touches[0]; x0 = p.clientX; y0 = p.clientY; t0 = Date.now(); }, { passive: true });
+  el.addEventListener("touchend", (e) => {
+    if (x0 == null) return;
+    const p = e.changedTouches[0], dx = p.clientX - x0, dy = p.clientY - y0;
+    x0 = null;
+    if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.6 && Date.now() - t0 < 700) step(dx < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+/* ================= sheets ================= */
+function openSheet(html, cls = "") {
+  closeSheet(true);
+  const sc = document.createElement("div"); sc.className = "scrim"; sc.onclick = () => closeSheet();
+  const sh = document.createElement("div"); sh.className = "sheet " + cls; sh.setAttribute("role", "dialog"); sh.setAttribute("aria-modal", "true");
+  sh.innerHTML = `<div class="grab"></div>` + html;
+  document.body.append(sc, sh);
+  requestAnimationFrame(() => { sc.classList.add("on"); sh.classList.add("on"); });
+  const f = sh.querySelector("input, button:not(.iconbtn)"); if (f && sh.querySelector("input")) setTimeout(() => f.focus(), 250);
+  let y0 = null;
+  sh.addEventListener("touchstart", (e) => { if (sh.scrollTop <= 0) y0 = e.touches[0].clientY; }, { passive: true });
+  sh.addEventListener("touchend", (e) => { if (y0 != null && e.changedTouches[0].clientY - y0 > 90) closeSheet(); y0 = null; }, { passive: true });
+  return sh;
+}
+function closeSheet(now) {
+  const sc = $(".scrim"), sh = $(".sheet");
+  if (!sh) return;
+  if (now) { sc?.remove(); sh.remove(); return; }
+  sc?.classList.remove("on"); sh.classList.remove("on");
+  setTimeout(() => { sc?.remove(); sh.remove(); }, 220);
+}
+const closeBtn = `<button class="iconbtn" type="button" data-close aria-label="Închide">${icon("x")}</button>`;
+document.addEventListener("click", (e) => { if (e.target.closest("[data-close]")) closeSheet(); });
+
+/* ---------- detail ---------- */
+function openDetail(e) {
+  if (!e) return;
+  const g = groupInfo(curGroupId());
+  const p = placeOf(e), mu = mapsUrl(e);
+  const rows = [
+    ["Când", `${DAYS[e.d]}, ${hs(e.s)}–${hs(e.e)}${weekText(e) ? ` · ${weekText(e)}` : ""}`],
+    e.r && ["Sala", esc(e.r) + (p ? `<br><span style="color:var(--muted)">${esc(p.place)}</span>` : "")],
+    e.prof && ["Cadru didactic", esc(e.prof)],
+    whoText(g, e) && ["Cine", esc(whoText(g, e))],
+    e.opt && ["Opțional", { lang: "limbă străină" + (e.lang ? ` (${LANGS[e.lang].toLowerCase()})` : ""), ped: "modulul pedagogic", cm: "complemente de matematică", fac: "facultativ" }[e.opt]],
+    e.note && ["Notă", esc(e.note)],
+    e.choice && ["Variante", "Una dintre mai multe opțiuni în același interval."],
+  ].filter(Boolean);
+  const rep = CONFIG.report ? `<button class="btn sec" type="button" id="rep">Raportează o greșeală</button>` : "";
+  openSheet(`<div class="detail"><div class="sh-h"><span class="chip k-${e.k}" style="background:var(--k-bg);color:var(--k-fg)">${KIND[e.k] || "Activitate"}</span>${closeBtn}</div>
+    <h2 style="margin-top:10px">${esc(e.t || e.a)}</h2>
+    <dl class="kv">${rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    ${e.cx ? `<div class="raw" style="color:var(--text)">Orarul are aici detalii pe săptămâni care nu încap într-o singură oră. Citește textul original de mai jos.</div>` : ""}
+    <div class="raw">În orar: „${esc(e.raw)}” · celula ${esc(e.src)} din foaia oficială</div>
+    <div class="acts">${mu ? `<a class="btn" href="${mu}" target="_blank" rel="noopener">${icon("pin")} Traseu în Maps</a>` : ""}${rep}</div></div>`);
+  const r = $("#rep"); if (r) r.onclick = () => report(e);
+}
+
+/* ---------- settings ---------- */
+function openSettings() {
+  const g = groupInfo(P.group);
+  const fac = S.idx.faculties.find((f) => f.id === (P.fac || "ac"));
+  const allE = entriesFor(P.group, P.sg);
+  const langs = langOptions(P.group);
+  const lc = langCtx(P.group);
+  const slotsAll = P.opts.lang && P.opts.lang !== "all" ? lc.pool.filter((x) => x.lang === P.opts.lang) : [];
+  const curSlot = (chosenLangSlots(P.group) || []).filter((x) => !x.pick).map((x) => x.id);
+  const has = (k) => allE.some((x) => x.opt === k);
+  const pv = (t) => {
+    const map = { light: ["#ffffff", "#3a2fb0", "#e3e8ff", "#fff1d6", "#dcf3e6"], dark: ["#17181d", "#8f86ff", "#2a3354", "#4a3c1c", "#1d3d2c"], amoled: ["#000000", "#9b93ff", "#1b2240", "#362b12", "#12301f"], utcn: ["#ffffff", "#0b3a6f", "#dbe6f3", "#fbe3e6", "#e1f1e6"], classic: ["#141519", "#6e5bd6", "#1b2a48", "#3b2e14", "#173a25"] }[t];
+    return `<span class="pv" style="background:${map[0]}">${map.slice(1).map((c) => `<i style="background:${c}"></i>`).join("")}</span>`;
+  };
+  const sw = (id, on, label) => `<button type="button" class="sw" role="switch" aria-checked="${!!on}" data-sw="${id}" aria-label="${esc(label)}"><i></i></button>`;
+  const nch = myChanges().length, dd = S.idx.depts[g.dept];
+  const sh = openSheet(`<div class="sh-h"><h2>Setări</h2>${closeBtn}</div>
+    <div class="card" style="margin-bottom:12px"><button class="row" type="button" data-set="changes"><span>Ce s-a schimbat în orar<br><small style="color:var(--muted)">Orar oficial: ${esc(dd.stamp || "—")}</small></span><span class="v">${nch ? `<span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:4px;background:var(--utcn-red,#e5484d);margin-right:6px"></span>${nch} ${nch === 1 ? "nouă" : "noi"} ` : ""}›</span></button></div>
+    <div class="card">
+      <button class="row" type="button" data-set="fac"><span>Facultate</span><span class="v">${esc(fac ? fac.short : "")} ›</span></button>
+      <button class="row" type="button" data-set="group"><span>Grupă</span><span class="v">${esc(g.label)} ›</span></button>
+      ${g.sgs.length > 1 ? `<div class="row"><span>Semigrupă</span><span class="seg" role="group" aria-label="Semigrupa">${g.sgs.map((s) => `<button type="button" data-sg="${s}" aria-pressed="${P.sg === s}">${s}</button>`).join("")}</span></div>` : ""}
+    </div>
+    <div class="sec">Temă</div>
+    <div class="themes">${THEMES.map(([id, nm]) => `<button type="button" data-theme="${id}" aria-pressed="${(P.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === id}">${pv(id)}${nm}</button>`).join("")}</div>
+    <div class="sec">Ore opționale</div>
+    <div class="card">
+      ${langs.length ? `<div class="row" style="flex-wrap:wrap"><span>Limba străină</span><span class="chips">${langs.map((l) => `<button type="button" data-lng="${l}" aria-pressed="${P.opts.lang === l}">${LANGS[l]}</button>`).join("")}<button type="button" data-lng="all" aria-pressed="${!P.opts.lang || P.opts.lang === "all"}">Toate</button></span></div>` : ""}
+      ${slotsAll.length > 1 ? `<div class="row" style="flex-wrap:wrap"><span>Ora de ${LANGS[P.opts.lang].toLowerCase()}</span><span class="chips">${slotsAll.map((x) => `<button type="button" data-lslot="${esc(x.id)}" aria-pressed="${curSlot.includes(x.id) && curSlot.length === 1}">${DSH[x.d]} ${hs(x.s)}–${hs(x.e)} · ${esc(x.groups.join(", "))}</button>`).join("")}</span></div>` : ""}
+      ${has("ped") ? `<div class="row"><span>Modulul pedagogic</span>${sw("ped", P.opts.ped !== false, "Modulul pedagogic")}</div>` : ""}
+      ${has("cm") ? `<div class="row"><span>Complemente de matematică</span>${sw("cm", P.opts.cm !== false, "Complemente de matematică")}</div>` : ""}
+      ${has("fac") ? `<div class="row"><span>Cursuri facultative</span>${sw("fac", P.opts.fac !== false, "Cursuri facultative")}</div>` : ""}
+      ${!langs.length && !has("ped") && !has("cm") && !has("fac") ? `<div class="row"><span style="color:var(--muted)">Grupa ta nu are ore opționale.</span></div>` : ""}
+    </div>
+    <div class="sec">Afișare</div>
+    <div class="card">
+      <div class="row"><span>Vedere</span><span class="seg" role="group" aria-label="Vedere">${[["auto", "Automat"], ["day", "Zi"], ["week", "Săptămână"]].map(([k, n]) => `<button type="button" data-vw="${k}" aria-pressed="${(P.view || "auto") === k}">${n}</button>`).join("")}</span></div>
+      <div class="row"><span>Mărimea textului</span><span class="seg" role="group" aria-label="Mărimea textului">${[[0.94, "A-"], [1, "A"], [1.1, "A+"], [1.2, "A++"]].map(([k, n]) => `<button type="button" data-fs="${k}" aria-pressed="${(P.fs || 1) === k}">${n}</button>`).join("")}</span></div>
+      ${"Notification" in window && "serviceWorker" in navigator ? `<div class="row"><span>Anunță-mă când se schimbă orarul<br><small style="color:var(--muted)">Merge cel mai bine cu aplicația instalată.</small></span>${sw("notify", P.notify, "Notificări")}</div>` : ""}
+    </div>
+    <div class="sec">Calendar</div>
+    <div class="card">
+      <a class="row" href="https://calendar.google.com/calendar/render?cid=${encodeURIComponent(icsUrl(true))}" target="_blank" rel="noopener"><span>Abonează-te în Google Calendar</span><span class="v">›</span></a>
+      <a class="row" href="${icsUrl(true)}"><span>Abonează-te (Apple, Outlook)</span><span class="v">›</span></a>
+      <button class="row" type="button" data-set="ics"><span>Descarcă .ics doar cu orele tale</span><span class="v">›</span></button>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <button class="row" type="button" data-set="print"><span>Printează orarul</span><span class="v">PDF, light ›</span></button>
+      <button class="row" type="button" data-set="share"><span>Trimite orarul grupei</span><span class="v">link ›</span></button>
+      ${CONFIG.report ? `<button class="row" type="button" data-set="report"><span>Raportează o greșeală</span><span class="v">›</span></button>` : ""}
+    </div>
+    <div class="legal" style="margin-top:16px">Setările stau doar pe acest dispozitiv.</div>`);
+  sh.addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.sg) { P.sg = +b.dataset.sg; S.tmp = null; save(); render(); openSettings(); }
+    else if (b.dataset.theme) { P.theme = b.dataset.theme; save(); applyTheme(); openSettings(); render(); }
+    else if (b.dataset.lng) { P.opts.lang = b.dataset.lng; save(); render(); openSettings(); }
+    else if (b.dataset.lslot) { P.opts.langSlot = Object.assign({}, P.opts.langSlot, { [lc.sheet]: b.dataset.lslot }); save(); render(); openSettings(); }
+    else if (b.dataset.sw) {
+      const k = b.dataset.sw;
+      if (k === "notify") { toggleNotify(b); return; }
+      P.opts[k] = !(P.opts[k] !== false); save(); b.setAttribute("aria-checked", String(P.opts[k])); render();
+    }
+    else if (b.dataset.vw) { P.view = b.dataset.vw; save(); render(); openSettings(); }
+    else if (b.dataset.fs) { P.fs = +b.dataset.fs; save(); applyTheme(); render(); openSettings(); }
+    else if (b.dataset.set === "fac") { closeSheet(true); onboarding(1, true); }
+    else if (b.dataset.set === "group") { closeSheet(true); onboarding(2, true); }
+    else if (b.dataset.set === "ics") downloadIcs();
+    else if (b.dataset.set === "changes") { closeSheet(true); openChanges(); }
+    else if (b.dataset.set === "print") { closeSheet(true); openPrint(); }
+    else if (b.dataset.set === "share") share();
+    else if (b.dataset.set === "report") report();
+  });
+}
+function icsUrl(webcal) {
+  const u = `${location.origin}${location.pathname.replace(/[^/]*$/, "")}ics/${P.group}-${P.sg}.ics`;
+  return webcal ? u.replace(/^https?:/, "webcal:") : u;
+}
+async function toggleNotify(b) {
+  if (P.notify) { P.notify = false; save(); b.setAttribute("aria-checked", "false"); syncSW(); return; }
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { toast("Fără permisiune nu pot trimite notificări."); return; }
+    P.notify = true; save(); b.setAttribute("aria-checked", "true");
+    const reg = await navigator.serviceWorker.ready;
+    if ("periodicSync" in reg) { try { await reg.periodicSync.register("orar-check", { minInterval: 6 * 3600e3 }); } catch {} }
+    syncSW();
+    toast("Te anunț când apare o modificare la grupa ta.");
+  } catch { toast("Browserul nu permite notificări aici."); }
+}
+function syncSW() {
+  if (!navigator.serviceWorker?.controller) return;
+  navigator.serviceWorker.controller.postMessage({ type: "prefs", group: P.group, sg: P.sg, notify: P.notify, seen: (S.changes[0] || {}).at || null });
+}
+
+/* ---------- share ---------- */
+async function share() {
+  const g = groupInfo(curGroupId());
+  const url = `${location.origin}${location.pathname}#${g.id}${g.sgs.length > 1 ? "-" + curSg() : ""}`;
+  const title = `Orar ${g.label}`;
+  if (navigator.share) { try { await navigator.share({ title, text: `Orarul grupei ${g.label}`, url }); return; } catch (e) { if (e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(url); toast("Link copiat. Trimite-l colegilor."); } catch { prompt("Copiază linkul:", url); }
+}
+function report(e) {
+  const g = groupInfo(curGroupId());
+  const body = `Grupa ${g.label}/${curSg()}\n${e ? `${DAYS[e.d]} ${hs(e.s)}-${hs(e.e)} · ${e.t || e.a}\nÎn orar: ${e.raw} (${e.src})\n` : ""}\nCe e greșit:\n`;
+  if (/^https?:/.test(CONFIG.report)) window.open(CONFIG.report, "_blank", "noopener");
+  else location.href = `mailto:${CONFIG.report}?subject=${encodeURIComponent("Greșeală în orar " + g.label)}&body=${encodeURIComponent(body)}`;
+}
+
+/* ---------- changes ---------- */
+function myChanges() {
+  const gid = curGroupId(), sg = curSg(), g = S.idx && groupInfo(gid);
+  if (!g) return [];
+  const out = [];
+  for (const c of S.changes) {
+    if (c.dept !== g.dept) continue;
+    for (const x of c.groups) if (x.g === gid) for (const it of x.items) if (((it.to || it.from).sg || []).includes(sg)) out.push(Object.assign({ at: c.at }, it));
+  }
+  return out.filter((x) => !P.seenChanges || x.at > P.seenChanges);
+}
+function chgText(it) {
+  const a = it.from, b = it.to, x = b || a;
+  const name = `${DAYS[x.d]} · ${x.t || x.a}${x.k ? ` (${(KIND[x.k] || "").toLowerCase()})` : ""}`;
+  if (it.type === "add") return { t: name, m: `oră nouă: ${hs(b.s)}–${hs(b.e)}${b.r ? ", sala " + b.r : ""}${weekText(b) ? ", " + weekText(b) : ""}` };
+  if (it.type === "del") return { t: name, m: `scoasă din orar (era ${hs(a.s)}–${hs(a.e)}${a.r ? ", " + a.r : ""})` };
+  const parts = [];
+  if (a.s !== b.s || a.e !== b.e) parts.push(`ora: <s>${hs(a.s)}–${hs(a.e)}</s> → ${hs(b.s)}–${hs(b.e)}`);
+  if ((a.r || "") !== (b.r || "")) parts.push(`sala: <s>${esc(a.r || "—")}</s> → ${esc(b.r || "—")}`);
+  if (weekText(a) !== weekText(b)) parts.push(`săptămâni: <s>${weekText(a) || "toate"}</s> → ${weekText(b) || "toate"}`);
+  if ((a.sg || []).join() !== (b.sg || []).join()) parts.push(`semigrupe: ${(b.sg || []).join(", ")}`);
+  return { t: name, m: parts.join("; ") || "detalii modificate", html: true };
+}
+function openChanges() {
+  const g = groupInfo(curGroupId());
+  const d = S.idx.depts[g.dept];
+  const mine = [];
+  const others = [];
+  for (const c of S.changes.filter((c) => c.dept === g.dept)) for (const x of c.groups) for (const it of x.items) ((x.g === g.id && ((it.to || it.from).sg || []).includes(curSg())) ? mine : others).push(Object.assign({ at: c.at, g: x.g }, it));
+  const fmtAt = (s) => { const t = new Date(s); return `${t.getDate()} ${MON[t.getMonth()]}, ${pad(t.getHours())}:${pad(t.getMinutes())}`; };
+  const item = (it, showG) => { const c = chgText(it); return `<div class="chg"><i></i><div><div class="t">${showG ? `<span style="color:var(--muted)">${esc(it.g)} ·</span> ` : ""}${esc(c.t)}</div><div class="m">${c.html ? c.m : esc(c.m)} · <span style="color:var(--faint)">${fmtAt(it.at)}</span></div></div></div>`; };
+  const checked = d.checkedAt ? fmtAt(d.checkedAt) : "—";
+  openSheet(`<div class="sh-h"><h2>Ce s-a schimbat</h2>${closeBtn}</div>
+    <div style="color:var(--muted);font-size:.9rem">Orarul oficial: ${esc(d.stamp || "—")}. Verificat ultima dată: ${checked}.</div>
+    <div class="sec">La grupa ta</div>
+    ${mine.length ? mine.slice(0, 40).map((x) => item(x)).join("") : `<div style="color:var(--muted);padding:6px 2px">Nicio modificare la ${esc(g.label)}${g.sgs.length > 1 ? "/" + curSg() : ""} de când urmăresc orarul.</div>`}
+    ${others.length ? `<details style="margin-top:14px;border-top:1px solid var(--line);padding-top:12px"><summary style="cursor:pointer;color:var(--muted);font-weight:600">Restul facultății · ${others.length} ${others.length === 1 ? "modificare" : "modificări"}</summary>${others.slice(0, 120).map((x) => item(x, true)).join("")}</details>` : ""}
+    <div class="legal" style="text-align:left;margin-top:16px">Modificările se detectează automat, comparând orarul oficial cu versiunea de dinainte.</div>`);
+  if (S.changes[0]) { P.seenChanges = S.changes[0].at; save(); syncSW(); setTimeout(render, 300); }
+}
+
+/* ---------- search ---------- */
+function openSearch() {
+  const g = groupInfo(curGroupId());
+  const sh = openSheet(`<div class="sh-h"><h2>Caută</h2>${closeBtn}</div>
+    <label class="srch">${icon("search")}<input type="search" placeholder="Sala (D21), profesor sau materie" aria-label="Caută" autocomplete="off"></label>
+    <div style="font-size:.82rem;color:var(--muted);margin:8px 2px">Caută în tot orarul ${esc(S.idx.programs[g.prog] ? "departamentului" : "")}: ce e în săptămâna ${weekNo(S.wi)} într-o sală, unde predă cineva.</div>
+    <div id="sres"></div>`);
+  const inp = sh.querySelector("input"), out = sh.querySelector("#sres");
+  const data = S.data[g.dept];
+  const n = weekNo(S.wi);
+  const norm = (s) => String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/amf\.?\s*/g, "").replace(/\s+/g, "");
+  let tmr;
+  inp.addEventListener("input", () => { clearTimeout(tmr); tmr = setTimeout(run, 120); });
+  function run() {
+    const q = norm(inp.value);
+    if (q.length < 2) { out.innerHTML = ""; return; }
+    const hits = new Map();
+    for (const gg of data.groups) for (const e of data.entries[gg.id] || []) {
+      if (!occurs(e, n)) continue;
+      const hay = [norm(e.r), norm(e.prof), norm(e.t), norm(e.a)];
+      if (!(hay[0] === q || hay[0].startsWith(q) || hay[1].includes(q) || hay[2].includes(q) || hay[3] === q)) continue;
+      const k = `${e.d}|${e.s}|${e.e}|${e.r}|${e.t}|${e.k}`;
+      if (!hits.has(k)) hits.set(k, { e, groups: new Set() });
+      hits.get(k).groups.add(gg.label);
+    }
+    const t = today(), nh = nowH(), td = Math.round((t - weekStart(S.wi)) / 864e5);
+    const list = [...hits.values()].sort((a, b) => a.e.d - b.e.d || a.e.s - b.e.s).slice(0, 80);
+    out.innerHTML = list.length ? list.map(({ e, groups }) => {
+      const now = e.d === td && e.s <= nh && e.e > nh;
+      return `<div class="res${now ? " now" : ""}"><div class="when">${DSH[e.d]} ${hs(e.s)}–${hs(e.e)}${now ? "<br>acum" : ""}</div><div class="what"><b>${esc(e.t || e.a)}</b> · ${esc(KIND[e.k] || "")}<small>${esc([e.r && "sala " + e.r, e.prof, [...groups].slice(0, 6).join(", ") + (groups.size > 6 ? "…" : "")].filter(Boolean).join(" · "))}</small></div></div>`;
+    }).join("") : `<div style="color:var(--muted);padding:10px 2px">Nimic în săptămâna ${n}.</div>`;
+  }
+}
+
+/* ---------- print (always light) ---------- */
+function openPrint() {
+  const sh = openSheet(`<div class="sh-h"><h2>Printează</h2>${closeBtn}</div>
+    <div style="color:var(--muted);font-size:.92rem;margin-bottom:12px">Se deschide fereastra de printare, pe fundal alb. Alege „Salvează ca PDF” dacă vrei fișier.</div>
+    <div class="card">
+      <button class="row" type="button" data-pr="all"><span>Toate săptămânile<br><small style="color:var(--muted)">orele de săpt. pare/impare sunt marcate</small></span><span class="v">›</span></button>
+      <button class="row" type="button" data-pr="week"><span>Doar săptămâna ${weekNo(S.wi)}</span><span class="v">›</span></button>
+    </div>`);
+  sh.addEventListener("click", (e) => { const b = e.target.closest("[data-pr]"); if (b) { closeSheet(true); doPrint(b.dataset.pr); } });
+}
+function doPrint(mode) {
+  const g = groupInfo(curGroupId()), sg = curSg(), n = weekNo(S.wi);
+  const list = entriesFor(g.id, sg).filter(visibleFor).filter((e) => mode === "all" || occurs(e, n));
+  const slots = [...new Set(list.flatMap((e) => [Math.floor(e.s)]))].sort((a, b) => a - b);
+  const minH = Math.min(8, ...list.map((e) => Math.floor(e.s))), maxH = Math.max(16, ...list.map((e) => Math.ceil(e.e)));
+  let rows = "";
+  for (let h = minH; h < maxH; h += 2) {
+    rows += `<tr><td class="h">${h}–${h + 2}</td>`;
+    for (let d = 0; d < 5; d++) {
+      const cell = list.filter((e) => e.d === d && e.s >= h && e.s < h + 2);
+      rows += `<td>${cell.map((e) => `<div class="pe k-${e.k}"><b>${esc(e.t || e.a)}</b>${esc([KIND[e.k], e.r, (e.s !== h || e.e !== h + 2) ? hs(e.s) + "–" + hs(e.e) : "", mode === "all" ? weekText(e) : ""].filter(Boolean).join(" · "))}${e.opt && e.opt !== "lang" ? " · opțional" : ""}</div>`).join("")}</td>`;
+    }
+    rows += "</tr>";
+  }
+  const prog = S.idx.programs[g.prog];
+  $("#print-root").innerHTML = `<h1>Orar ${esc(g.label)}${g.sgs.length > 1 ? " · semigrupa " + sg : ""}</h1>
+    <div class="pm">${esc(prog.name)} · anul ${["I","II","III","IV"][g.year - 1] || g.year}${g.sub ? " · " + esc(g.sub) : ""} · ${mode === "all" ? "semestrul I 2026–2027, toate săptămânile" : `săptămâna ${n} (${weekRange(S.wi)}, ${n % 2 ? "impară" : "pară"})`} · orar oficial ${esc(S.idx.depts[g.dept].stamp || "")}</div>
+    <table><thead><tr><th style="width:13mm"></th>${DAYS.map((d) => `<th>${d}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table>
+    <div class="lg">Curs · Seminar · Laborator · Proiect. Generat de ${esc(CONFIG.site.replace(/^https?:\/\//, ""))}.</div>`;
+  setTimeout(() => window.print(), 60);
+}
+
+/* ---------- .ics download (only the user's own hours) ---------- */
+function downloadIcs() {
+  const g = groupInfo(P.group), sg = P.sg;
+  const list = entriesFor(P.group, sg).filter(visibleFor);
+  const c = CAL(), hol = new Set(c.holidays.map((h) => h[0]));
+  const L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//utcna.pages.dev//orar//RO", "CALSCALE:GREGORIAN", `X-WR-CALNAME:Orar ${g.label}`];
+  const dt = (date, h) => `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(Math.floor(h))}${pad(Math.round((h % 1) * 60))}00`;
+  const e2 = (s) => String(s || "").replace(/[\\;,]/g, (m) => "\\" + m).replace(/\n/g, "\\n");
+  for (const e of list) for (let i = 0; i < c.weeks.length; i++) {
+    if (!occurs(e, c.weeks[i][1])) continue;
+    const date = dateOf(i, e.d); if (hol.has(isoD(date))) continue;
+    const p = placeOf(e);
+    L.push("BEGIN:VEVENT", `UID:${g.id}-${sg}-${c.weeks[i][1]}-${e.d}-${e.s}-${(e.a || "").replace(/\W/g, "")}@utcna`, `DTSTAMP:${dt(new Date(), 0)}Z`.replace(/T000000Z$/, "T000000Z"),
+      `DTSTART;TZID=Europe/Bucharest:${dt(date, e.s)}`, `DTEND;TZID=Europe/Bucharest:${dt(date, e.e)}`,
+      `SUMMARY:${e2((e.t || e.a) + (KIND[e.k] ? ` (${KIND[e.k].toLowerCase()})` : ""))}`, e.r ? `LOCATION:${e2("Sala " + e.r + (p ? ", " + p.place : ""))}` : "", `DESCRIPTION:${e2([e.prof, "În orar: " + e.raw].filter(Boolean).join("\n"))}`, "END:VEVENT");
+  }
+  L.push("END:VCALENDAR");
+  const blob = new Blob([L.filter(Boolean).join("\r\n")], { type: "text/calendar" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `orar-${g.label}-${sg}.ics`; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ================= onboarding ================= */
+const OB = { fac: null, group: null, sg: null, year: null, prog: null, q: "" };
+function onboarding(stepNo, fromSettings) {
+  OB.fac = OB.fac || P.fac || null; OB.group = OB.group || P.group || null; OB.sg = OB.sg || P.sg || null;
+  if (OB.group) { const g = groupInfo(OB.group); if (g) { OB.year = OB.year || g.year; OB.prog = OB.prog || g.prog; } }
+  OB.fromSettings = !!fromSettings;
+  let el = $(".onb");
+  if (!el) { el = document.createElement("div"); el.className = "onb"; el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); document.body.appendChild(el); }
+  const prog = (k) => `<div class="prog">${[1, 2, 3].map((x) => `<i class="${x <= k ? "on" : ""}"></i>`).join("")}</div>`;
+  const back = (to) => `<button class="iconbtn" style="width:56px;height:56px;border-radius:18px" type="button" data-ob="back" data-to="${to}" aria-label="Înapoi">${icon("left")}</button>`;
+  if (stepNo === 1) {
+    const facs = S.idx.faculties;
+    const norm = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    const q = norm(OB.q || "");
+    const match = facs.filter((f) => !q || norm(f.name + " " + f.keys + " " + f.short).includes(q));
+    const hl = (s) => { if (!q) return esc(s); const i = norm(s).indexOf(q); return i < 0 ? esc(s) : esc(s.slice(0, i)) + "<mark>" + esc(s.slice(i, i + q.length)) + "</mark>" + esc(s.slice(i + q.length)); };
+    el.innerHTML = `<div class="onb-in">${prog(1)}
+      <div><div class="kicker">Pasul 1 din 3</div><h2>La ce facultate ești?</h2><div class="lead">UTCN, Cluj-Napoca. Poți schimba oricând din Setări.</div></div>
+      <label><span class="lbl">Caută facultatea</span><span class="srch">${icon("search")}<input id="facq" value="${esc(OB.q)}" placeholder="ex. automatică, etti, mecanică" autocomplete="off"></span></label>
+      <div class="fac-list">${match.map((f) => `<button type="button" data-fac="${f.id}" ${f.ready ? "" : "disabled"} aria-pressed="${OB.fac === f.id}"><span><span class="nm">${hl(f.name)}</span>${f.ready && f.desc ? `<br><span class="ds">${esc(f.desc)}</span>` : ""}</span>${f.ready ? (OB.fac === f.id ? icon("check") : "") : `<span class="soon">în curând</span>`}</button>`).join("") || `<div style="padding:14px;color:var(--muted)">Nu am găsit facultatea.</div>`}</div>
+      <div class="foot2 ${fromSettings || P.group ? "" : "one"}">${fromSettings || P.group ? `<button class="iconbtn" style="width:56px;height:56px;border-radius:18px" type="button" data-ob="close" aria-label="Închide">${icon("x")}</button>` : ""}<button class="btn" type="button" data-ob="next" ${OB.fac ? "" : "disabled"}>Continuă</button></div></div>`;
+    const inp = $("#facq");
+    inp.addEventListener("input", () => { OB.q = inp.value; const pos = inp.selectionStart; onboarding(1, fromSettings); const i2 = $("#facq"); i2.focus(); i2.setSelectionRange(pos, pos); });
+  } else if (stepNo === 2) {
+    const gs = S.idx.depts ? Object.values(S.idx.depts).flatMap((d) => d.groups) : [];
+    const progs = Object.entries(S.idx.programs).filter(([k, p]) => p.fac === OB.fac && gs.some((g) => g.prog === k));
+    if (!OB.prog || !progs.some(([k]) => k === OB.prog)) OB.prog = progs[0] && progs[0][0];
+    const years = [...new Set(gs.filter((g) => g.prog === OB.prog).map((g) => g.year))].sort();
+    if (!OB.year || !years.includes(OB.year)) OB.year = years[0];
+    const list = gs.filter((g) => g.prog === OB.prog && g.year === OB.year);
+    const isM = S.idx.programs[OB.prog].level === "master";
+    el.innerHTML = `<div class="onb-in">${prog(2)}
+      <div><div class="kicker">Pasul 2 din 3 · ${esc(S.idx.faculties.find((f) => f.id === OB.fac).short)}</div><h2>În ce grupă ești?</h2></div>
+      <div><span class="lbl">Specializarea</span><div class="chips">${progs.map(([k, p]) => `<button type="button" data-prog="${k}" aria-pressed="${OB.prog === k}">${esc(p.name)}</button>`).join("")}</div></div>
+      <div><span class="lbl">Anul</span><div class="seg" role="group" aria-label="Anul" style="display:grid;grid-template-columns:repeat(${years.length},minmax(0,1fr));width:100%">${years.map((y) => `<button type="button" data-year="${y}" aria-pressed="${OB.year === y}">${["I", "II", "III", "IV"][y - 1]}</button>`).join("")}</div></div>
+      <div><span class="lbl">Grupa</span><div class="bub">${list.map((g) => `<button type="button" data-grp="${g.id}" aria-pressed="${OB.group === g.id}">${esc(isM && g.sub && !/^\d/.test(g.label) ? g.label.replace(/^\w+-/, "") : g.label)}${g.sub ? `<small>${esc(g.sub)}</small>` : ""}</button>`).join("")}</div></div>
+      <div class="foot2">${back(1)}<button class="btn" type="button" data-ob="next" ${OB.group && list.some((g) => g.id === OB.group) ? "" : "disabled"}>Continuă</button></div></div>`;
+  } else {
+    const g = groupInfo(OB.group);
+    if (g.sgs.length < 2) { OB.sg = g.sgs[0]; return finishOnboarding(); }
+    el.innerHTML = `<div class="onb-in">${prog(3)}
+      <div><div class="kicker">Pasul 3 din 3 · grupa ${esc(g.label)}</div><h2>Și semigrupa?</h2><div class="lead">Grupa se împarte în două la laboratoare. Dacă nu știi încă, alege 1 și schimbi din Setări când afli.</div></div>
+      <div class="big2">${g.sgs.map((s) => `<button type="button" data-sgob="${s}" aria-pressed="${OB.sg === s}"><b>${s}</b><span>semigrupa ${s}</span></button>`).join("")}</div>
+      <div class="sum"><div style="font-size:.75rem;font-weight:700;letter-spacing:.08em;color:var(--muted)">SE SALVEAZĂ PE ACEST DISPOZITIV</div><div><span>Facultate</span><b>${esc(S.idx.faculties.find((f) => f.id === OB.fac).name)}</b></div><div><span>Grupă</span><b>${esc(g.label)} · anul ${["I","II","III","IV"][g.year - 1] || g.year}</b></div></div>
+      <div style="font-size:.88rem;color:var(--muted)">Orele opționale (limbă străină, modulul pedagogic, complemente) le alegi direct din orar, cu un tap.</div>
+      <div class="foot2">${back(2)}<button class="btn" type="button" data-ob="done" ${OB.sg ? "" : "disabled"}>Arată-mi orarul</button></div></div>`;
+  }
+  el.dataset.step = stepNo;
+  el.scrollTop = 0;
+}
+document.addEventListener("click", (ev) => {
+  const el = $(".onb"); if (!el || !el.contains(ev.target)) return;
+  const b = ev.target.closest("button"); if (!b) return;
+  const st = +el.dataset.step, fs = OB.fromSettings;
+  if (b.dataset.fac) { OB.fac = b.dataset.fac; onboarding(1, fs); }
+  else if (b.dataset.prog) { OB.prog = b.dataset.prog; OB.year = null; onboarding(2, fs); }
+  else if (b.dataset.year) { OB.year = +b.dataset.year; onboarding(2, fs); }
+  else if (b.dataset.grp) { OB.group = b.dataset.grp; OB.sg = null; onboarding(2, fs); }
+  else if (b.dataset.sgob) { OB.sg = +b.dataset.sgob; onboarding(3, fs); }
+  else if (b.dataset.ob === "next") onboarding(st + 1, fs);
+  else if (b.dataset.ob === "back") onboarding(+b.dataset.to, fs);
+  else if (b.dataset.ob === "done") finishOnboarding();
+  else if (b.dataset.ob === "close") { el.remove(); }
+});
+async function finishOnboarding() {
+  const changedGroup = P.group !== OB.group;
+  P.fac = OB.fac; P.group = OB.group; P.sg = OB.sg || 1;
+  if (changedGroup) P.seenChanges = (S.changes[0] || {}).at || null;
+  S.tmp = null; save();
+  $(".onb")?.remove();
+  if (location.hash) history.replaceState(null, "", location.pathname);
+  await openMain();
+  syncSW();
+}
+
+/* ================= after render: install chip, SW, change toast ================= */
+let deferredInstall = null;
+const isStandalone = () => matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstall = e; showInstall(); });
+window.addEventListener("appinstalled", () => { P.installed = Date.now(); save(); deferredInstall = null; showInstall(); });
+function showInstall() {
+  const slot = $("#install-slot"); if (!slot) return;
+  slot.innerHTML = "";
+  if (isStandalone() || P.installed) return;
+  if (P.installHide && Date.now() - P.installHide < 30 * 864e5) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  if (deferredInstall) slot.innerHTML = `<div class="install">${icon("cal")}<span class="grow">Pune orarul pe ecranul principal. Merge și fără internet.</span><button class="go" type="button" id="inst">Instalează</button><button class="x" type="button" id="instx" aria-label="Nu acum">${icon("x")}</button></div>`;
+  else if (ios && /safari/i.test(navigator.userAgent) && !/crios|fxios/i.test(navigator.userAgent)) slot.innerHTML = `<div class="install">${icon("share")}<span class="grow">Pe iPhone: apasă <b>Share</b>, apoi <b>Add to Home Screen</b>.</span><button class="x" type="button" id="instx" aria-label="Nu acum">${icon("x")}</button></div>`;
+  const i = $("#inst"); if (i) i.onclick = async () => { const d = deferredInstall; deferredInstall = null; d.prompt(); const r = await d.userChoice; if (r.outcome === "accepted") { P.installed = Date.now(); save(); } showInstall(); };
+  const x = $("#instx"); if (x) x.onclick = () => { P.installHide = Date.now(); save(); slot.innerHTML = ""; };
+}
+async function checkInstalled() {
+  if (isStandalone()) { if (!P.installed) { P.installed = Date.now(); save(); } return; }
+  if ("getInstalledRelatedApps" in navigator) { try { const a = await navigator.getInstalledRelatedApps(); if (a && a.length) { P.installed = Date.now(); save(); showInstall(); } } catch {} }
+}
+let afterDone = false;
+function afterRender() {
+  showInstall();
+  if (afterDone) return; afterDone = true;
+  checkInstalled();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").then(() => setTimeout(syncSW, 1500)).catch(() => {});
+  setTimeout(() => { const m = myChanges(); if (m.length) toast(`S-a schimbat ceva în orarul tău (${m.length}).`, "Vezi", openChanges, 7000); }, 1200);
+  if (P.migrated) { delete P.migrated; save(); toast("Ți-am păstrat grupa de pe site-ul vechi."); }
+  setInterval(() => { if (document.visibilityState === "visible" && S.view === "day") { const h = $("#hero-slot"); if (h) h.innerHTML = heroHtml(); } }, 30000);
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") render(); });
+}
+const _show = showInstall;
+document.addEventListener("click", () => {}, { passive: true });
+new MutationObserver(() => { if ($("#install-slot") && !$("#install-slot").children.length) _show(); }).observe($("#app"), { childList: true });
+
+boot();
+})();
+</script>
+</body>
+</html>
