@@ -87,6 +87,10 @@ With every new release of the site, bump `const V = "orar-v2-N"` in `public/sw.j
 
 Found a wrong or missing class? Open an issue with the group and what should be there. Still missing: IMM, FAU, the master's programmes and ETTI SICAS.
 
+## More from the same author
+
+- [Dribbit](https://github.com/Fane-dinte/Dribbit): a private AirDrop over the internet that runs on your own Cloudflare account.
+
 ## License
 
 [MIT](LICENSE) for the code. The timetables belong to UTCN.
