@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { writeSeo } from '../lib/seo.mjs';
 import { buildDept, diffDept, FACULTIES, PROGRAMS, CALENDAR } from '../lib/build.mjs';
 import { PLACES } from '../lib/rooms.mjs';
 import { writeIcs } from '../lib/ics.mjs';
@@ -140,4 +141,5 @@ changes = changes.slice(0, 60);
 Object.assign(index, { v: 2, faculties: FACULTIES, programs: PROGRAMS, calendar: CALENDAR, places: PLACES, checkedAt: now });
 fs.writeFileSync(path.join(OUT, 'index.json'), JSON.stringify(index));
 fs.writeFileSync(path.join(OUT, 'changes.json'), JSON.stringify(changes));
+writeSeo(ROOT, index);
 console.log(changed ? 'date noi scrise' : 'nicio schimbare');

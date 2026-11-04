@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /ics/
+Disallow: /data/
+
+Sitemap: https://utcna.pages.dev/sitemap.xml
